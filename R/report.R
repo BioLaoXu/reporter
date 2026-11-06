@@ -211,7 +211,7 @@ rp_module_skip_reason <- function(mod, ctx) {
 render_report <- function(report, output = "report.html",
                           theme = NULL, standalone = TRUE,
                           title = NULL, only = NULL, quiet = FALSE, json_sidecar = FALSE,
-                          engine = NULL) {
+                          engine = NULL, print_mode = FALSE) {
   if (!inherits(report, "reporter_report")) {
     stop("`report` must be created by reporter::create_report()", call. = FALSE)
   }
@@ -227,8 +227,9 @@ render_report <- function(report, output = "report.html",
   if (!is.null(engine <- rp_char1(engine))) {
     engine <- match.arg(engine, c("reactable", "lite"))
     ctx$meta$engine <- engine
-
   }
+  ctx$meta$print_mode <- isTRUE(print_mode)
+
   if (!is.null(only)) {
     only <- only[!is.na(only) & nzchar(only)]
   }

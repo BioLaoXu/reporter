@@ -95,7 +95,8 @@ report_context <- function(result_path,
     fasta_db = fasta_db,
     gtf_db = gtf_db,
     options = options,
-    engine = "reactable"
+    engine = "reactable",
+    print_mode = FALSE
   )
 
   ## counters and registry live in a private environment
@@ -228,11 +229,20 @@ report_context <- function(result_path,
       `data-rp-module` = private$current_module
     )
     engine <- ctx$meta$engine %||% "reactable"
+    print_mode <- isTRUE(ctx$meta$print_mode)
     block <- if (identical(engine, "lite")) {
       table_lite_block(
         data = data, number = n, title = title,
         caption = caption, description = description,
         dom_id = tid, data_attrs = tbl_attrs
+      )
+    } else if (print_mode) {
+      ## print mode: render the FULL table (no pagination UI in the PDF)
+      table_block(
+        data = data, number = n, title = title,
+        caption = caption, description = description,
+        dom_id = tid, data_attrs = tbl_attrs, ...,
+        pagination = FALSE
       )
     } else {
       table_block(
@@ -268,7 +278,8 @@ report_context <- function(result_path,
           data_table(ex, searchable = FALSE, show_page_sizes = FALSE,
                      default_page_size = 30L, wrap = TRUE, align = "left")
         },
-        summary = "点击查看表格解释："
+        summary = "点击查看表格解释：",
+        open = print_mode
       )
     )
   }

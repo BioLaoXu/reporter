@@ -810,3 +810,54 @@ body.rp-style-card .rp-toc-module-link.active { background: #F0F3FD; color: var(
   text-align: right; font-family: var(--rp-font-mono, Consolas, monospace);
   font-variant-numeric: tabular-nums;
 }
+
+/* ==========================================================================
+   PDF export rules (P3, per 报告优化.md §7.1)
+   Applied whenever the report is printed (browser Ctrl+P or headless
+   Chrome). Keeps heatmap/table colors, unfolds galleries, prevents
+   mid-element page breaks and repeats table headers across pages.
+   ========================================================================== */
+@media print {
+  @page { size: A4 portrait; margin: 14mm 12mm 16mm 12mm; }
+
+  /* 1. force every background color and border into the PDF */
+  *, *::before, *::after {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* 2. hide interactive chrome */
+  .rp-navbar, .rp-toc, .rp-toc-toggle, .rp-lightbox,
+  .rp-gallery-search, .rp-gallery-list,
+  .rp-grid-toolbar, .rt-pagination {
+    display: none !important;
+  }
+
+  /* 3. release the layout to fill the A4 text area */
+  body, body.rp-style-card { background: #fff !important; font-size: 11.5px !important; }
+  .rp-content { margin-left: 0 !important; padding: 0 !important; }
+  .rp-module, .rp-cover, .rp-container { max-width: none !important; }
+  .rp-style-card .rp-module {
+    box-shadow: none !important;
+    border-color: #CBD5E1 !important;
+    page-break-inside: auto;
+    break-inside: auto;
+  }
+
+  /* 4. unfold galleries: every pane prints (not only the active one) */
+  .rp-gallery-pane { display: block !important; page-break-inside: avoid; break-inside: avoid; margin-bottom: 14px; }
+  .rp-gallery-pane:not(.active) { position: static !important; }
+
+  /* 5. unfold collapsed details (belt & braces with the JS hook) */
+  details.rp-details > *:not(summary) { display: block !important; }
+
+  /* 6. pagination guards */
+  h1, h2, h3, .rp-module-title, .rp-subsection {
+    page-break-after: avoid; break-after: avoid;
+  }
+  .rp-fig, .rp-kpi-row, .rp-callout, .rp-gallery, tr {
+    page-break-inside: avoid; break-inside: avoid;
+  }
+  thead { display: table-header-group; }   /* repeat headers on long tables */
+  .rp-tbl, .rp-grid table.rp-table, .rt-table { page-break-inside: auto; }
+}

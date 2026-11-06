@@ -13,7 +13,8 @@ render_report(
   only = NULL,
   quiet = FALSE,
   json_sidecar = FALSE,
-  engine = NULL
+  engine = NULL,
+  print_mode = FALSE
 )
 }
 \arguments{
