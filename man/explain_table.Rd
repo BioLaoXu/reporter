@@ -4,7 +4,7 @@
 \alias{explain_table}
 \title{Resolve explanations for a set of table columns}
 \usage{
-explain_table(cols, registry = load_explanations(), sheet = NULL)
+explain_table(cols, registry = load_explanations(), sheet = NULL, fill = NULL)
 }
 \arguments{
 \item{cols}{character vector. Column names of the report table.}
@@ -13,6 +13,11 @@ explain_table(cols, registry = load_explanations(), sheet = NULL)
 
 \item{sheet}{character(1). Optional sheet name; when given, columns
 are resolved within that sheet only (authoritative disambiguation).}
+
+\item{fill}{character(1) or NULL. When non-NULL, unresolved columns
+are kept as rows with this placeholder text (e.g. \code{"待更新"}),
+instead of being dropped — used by \code{ctx$data_table()} so the
+explanation table always covers every column of the report table.}
 }
 \value{
 A data frame with columns \code{表格列名} and \code{解释} (plus \code{来源}

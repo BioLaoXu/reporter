@@ -2,7 +2,7 @@
 % Please edit documentation in R/tables.R
 \name{tippy_cell}
 \alias{tippy_cell}
-\title{Tippy tooltip cell renderer for long values}
+\title{Truncated cell with native hover tooltip for long values}
 \usage{
 tippy_cell(text, tooltip = text)
 }
@@ -12,10 +12,11 @@ tippy_cell(text, tooltip = text)
 \item{tooltip}{character(1). Tooltip content (defaults to \code{text}).}
 }
 \value{
-A \code{htmltools} div containing a \code{\link[tippy:tippy]{tippy::tippy()}} widget.
+A \code{htmltools} div.
 }
 \description{
-Migration of the legacy \code{render.reactable.cell.with.tippy()}: renders
-a truncated, dotted-underlined value with a hover tooltip showing the
-full text.
+Migration of the legacy \code{render.reactable.cell.with.tippy()}. Uses a
+\strong{native HTML \code{title} attribute} instead of the tippy js widget:
+works in any offline single-file report with zero JS dependencies
+(tippy's widget init proved unreliable inside inlined reports).
 }

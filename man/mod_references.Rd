@@ -4,7 +4,7 @@
 \alias{mod_references}
 \title{References module}
 \usage{
-mod_references(bib_file = NULL, title = "参考文献")
+mod_references(bib_file = NULL, title = "参考文献", only_keys = NULL)
 }
 \arguments{
 \item{bib_file}{character(1). Optional path to a \code{.bib} file.}

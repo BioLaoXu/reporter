@@ -1,9 +1,13 @@
 ## spec compiler: yaml -> modules, citation superscripts, empty guards
 
+REAL_DEMO <- "/data/Report/atac_project_2024/test0706_drosophila"
+
 test_that("render_spec builds qc layer with citations from yaml", {
+  skip_if_not(dir.exists(REAL_DEMO), "real ATAC demo dir not available")
   res <- render_spec(system.file("examples", "atac_qc_spec.yaml",
     package = "reporter"),
-    result_path = "/data/Report/atac_project_2024/test0706_drosophila",
+    result_path = "/data/Report/atac_project_2024/test0706_drosophila",  # nolint: real demo dir
+
     output = tempfile(fileext = ".html"), quiet = TRUE)
   expect_true(all(c("mod-qc", "mod-references") %in% res$modules))
   expect_length(res$errors, 0L)
@@ -28,7 +32,8 @@ test_that("citations resolve known keys and flag unknown", {
 test_that("references layer shows only cited entries when only_cited", {
   res <- render_spec(system.file("examples", "atac_qc_spec.yaml",
     package = "reporter"),
-    result_path = "/data/Report/atac_project_2024/test0706_drosophila",
+    result_path = "/data/Report/atac_project_2024/test0706_drosophila",  # nolint: real demo dir
+
     output = tempfile(fileext = ".html"), quiet = TRUE)
   html <- paste(readLines(res$output, warn = FALSE), collapse = "\n")
   ## fastp cited -> renumbered to [1]; unrelated bib entries dropped

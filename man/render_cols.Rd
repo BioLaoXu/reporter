@@ -2,7 +2,7 @@
 % Please edit documentation in R/tables.R
 \name{render_cols}
 \alias{render_cols}
-\title{Build tippy renderers for selected columns}
+\title{Build tooltip renderers for selected columns}
 \usage{
 render_cols(col_names, max_char = 30L)
 }
@@ -18,8 +18,8 @@ Named list of \code{colDef} objects.
 \description{
 Migration of the legacy \code{renderCols()}: returns a named list of
 \code{\link[reactable:colDef]{reactable::colDef()}} objects for \verb{columns=} in \code{\link[=data_table]{data_table()}}, where
-each listed column renders with a hover tooltip carrying the full
-value.
+each listed column renders with a native hover tooltip carrying the
+full value.
 }
 \examples{
 \dontrun{

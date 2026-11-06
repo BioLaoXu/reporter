@@ -7,7 +7,7 @@
 reporter_theme(
   preset = c("smzy", "jinyu", "blank", "default"),
   primary = NULL,
-  style = c("classic", "v2"),
+  style = c("classic", "v2", "card"),
   bslib_preset = "flatly",
   base_font = NULL,
   heading_font = NULL,
@@ -30,7 +30,9 @@ reporter_theme(
 \item{style}{character(1). Visual style family: \code{"classic"} (carded,
 gradient cover, default of v0.1.0) or \code{"v2"} (flat editorial style:
 white cover, hairline rules, plain-text captions, KPI rows, tighter
-typography — see \code{docs/设计调研-网页报告模板.md}).}
+typography — see \code{docs/设计调研-网页报告模板.md}) or \code{"card"}
+(Illumina-DRAGEN-style: light gray page, one white card per module,
+Inter-ish font stack, warm-gray text).}
 
 \item{bslib_preset}{character(1). Bootstrap base preset forwarded to
 \code{\link[bslib:bs_theme]{bslib::bs_theme()}}; defaults to \code{"flatly"}.}
@@ -78,8 +80,8 @@ any skin can also be overridden with plain CSS.
 Brand presets bundle the assets currently shipped with the Rmd-era
 reports:
 \itemize{
-\item \code{"smzy"} — 重庆生命知源 (logo, company name, service phone).
-\item \code{"jinyu"} — 金宇 brand preset.
+\item \code{"smzy"} — demo brand preset (placeholder company/phone/logo).
+\item \code{"jinyu"} — demo brand preset (placeholder company/phone/logo).
 \item \code{"blank"} — white-label: no logo, no company text.
 \item \code{"default"} — reporter's own neutral blue, no branding.
 }
