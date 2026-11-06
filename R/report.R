@@ -210,7 +210,8 @@ rp_module_skip_reason <- function(mod, ctx) {
 #' }
 render_report <- function(report, output = "report.html",
                           theme = NULL, standalone = TRUE,
-                          title = NULL, only = NULL, quiet = FALSE, json_sidecar = FALSE) {
+                          title = NULL, only = NULL, quiet = FALSE, json_sidecar = FALSE,
+                          engine = NULL) {
   if (!inherits(report, "reporter_report")) {
     stop("`report` must be created by reporter::create_report()", call. = FALSE)
   }
@@ -218,6 +219,15 @@ render_report <- function(report, output = "report.html",
   output <- rp_char1(output)
   if (is.null(output)) {
     stop("`output` must be a non-empty file path", call. = FALSE)
+  }
+
+  ## ---- rendering engine (dual-engine, P1) ---------------------------
+  ## NULL keeps the context default ("reactable"); "lite" switches all
+  ## ctx$data_table() output to the dependency-free native grid.
+  if (!is.null(engine <- rp_char1(engine))) {
+    engine <- match.arg(engine, c("reactable", "lite"))
+    ctx$meta$engine <- engine
+
   }
   if (!is.null(only)) {
     only <- only[!is.na(only) & nzchar(only)]
@@ -358,7 +368,7 @@ render_report <- function(report, output = "report.html",
       species = ctx$meta$species,
       ref_version = ctx$meta$ref_version,
       type = ctx$meta$type,
-      engine = "reactable",
+      engine = ctx$meta$engine,
       generated_at = format(Sys.time(), "%Y-%m-%d %H:%M:%S %Z"),
       reporter_version = as.character(utils::packageVersion("reporter"))
     ),

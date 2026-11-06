@@ -11,7 +11,8 @@ render_spec(
   title = NULL,
   standalone = TRUE,
   theme = NULL,
-  quiet = FALSE
+  quiet = FALSE,
+  engine = NULL
 )
 }
 \arguments{

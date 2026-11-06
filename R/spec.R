@@ -275,7 +275,7 @@ spec_layer_module <- function(layer, sp) {
 #' @export
 render_spec <- function(spec, result_path = NULL, output = "report.html",
                         title = NULL, standalone = TRUE, theme = NULL,
-                        quiet = FALSE) {
+                        quiet = FALSE, engine = NULL) {
   sp <- load_spec(spec)
   spec_dir <- attr(sp, "spec_dir")
   result_path <- rp_char1(result_path) %||% rp_char1(sp$result)
@@ -347,5 +347,5 @@ render_spec <- function(spec, result_path = NULL, output = "report.html",
   render_report(report, output = output, theme = th,
     standalone = standalone,
     title = title %||% rp_char1(sp$title) %||% "Analysis Report",
-    quiet = quiet)
+    quiet = quiet, engine = engine %||% rp_char1(sp$engine))
 }

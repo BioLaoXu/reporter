@@ -49,7 +49,9 @@ report_cli <- function(args = commandArgs(trailingOnly = TRUE),
     optparse::make_option(c("--modules"), type = "character", default = "chip",
       help = "Module set: chip | m6a"),
     optparse::make_option(c("--style"), type = "character", default = "classic",
-      help = "Visual style: classic | v2"),
+      help = "Visual style: classic | v2 | card"),
+    optparse::make_option(c("--engine"), type = "character", default = "reactable",
+      help = "Table rendering engine: reactable | lite"),
     optparse::make_option(c("--title"), type = "character", default = NA_character_,
       help = "Report title (default: '<project> analysis report')"),
     optparse::make_option(c("--lang"), type = "character", default = "en",
@@ -106,7 +108,8 @@ report_cli <- function(args = commandArgs(trailingOnly = TRUE),
           caption_lang = match.arg(opt$lang, c("en", "zh"))),
         standalone = !isTRUE(opt$no_standalone),
         title = title,
-        quiet = opt$quiet
+        quiet = opt$quiet,
+        engine = match.arg(opt$engine, c("reactable", "lite"))
       )
       if (length(res$errors) > 0L) 1L else 0L
     },

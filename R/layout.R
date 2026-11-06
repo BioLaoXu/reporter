@@ -24,7 +24,7 @@ rp_dependency <- function() {
     version = utils::packageVersion("reporter"),
     src = system.file("assets", package = "reporter"),
     stylesheet = "reporter.css",
-    script = "reporter.js",
+    script = c("reporter.js", "reporter-lite.js"),
     all_files = FALSE
   )
 }

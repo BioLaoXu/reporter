@@ -94,7 +94,8 @@ report_context <- function(result_path,
     ref_version = ref_version,
     fasta_db = fasta_db,
     gtf_db = gtf_db,
-    options = options
+    options = options,
+    engine = "reactable"
   )
 
   ## counters and registry live in a private environment
@@ -226,11 +227,20 @@ report_context <- function(result_path,
       `data-rp-tbl` = tid,
       `data-rp-module` = private$current_module
     )
-    block <- table_block(
-      data = data, number = n, title = title,
-      caption = caption, description = description,
-      dom_id = tid, data_attrs = tbl_attrs, ...
-    )
+    engine <- ctx$meta$engine %||% "reactable"
+    block <- if (identical(engine, "lite")) {
+      table_lite_block(
+        data = data, number = n, title = title,
+        caption = caption, description = description,
+        dom_id = tid, data_attrs = tbl_attrs
+      )
+    } else {
+      table_block(
+        data = data, number = n, title = title,
+        caption = caption, description = description,
+        dom_id = tid, data_attrs = tbl_attrs, ...
+      )
+    }
     if (!isTRUE(explain)) return(block)
     reg <- tryCatch(ctx$explain_registry(), error = function(e) NULL)
     if (!length(reg)) return(block)
@@ -252,9 +262,12 @@ report_context <- function(result_path,
     tagList(
       block,
       details_block(
-        content = data_table(ex, searchable = FALSE, show_page_sizes = FALSE,
-                             default_page_size = 30L, wrap = TRUE,
-                             align = "left"),
+        content = if (identical(ctx$meta$engine %||% "reactable", "lite")) {
+          rp_table_lite(ex, toolbar = FALSE)
+        } else {
+          data_table(ex, searchable = FALSE, show_page_sizes = FALSE,
+                     default_page_size = 30L, wrap = TRUE, align = "left")
+        },
         summary = "点击查看表格解释："
       )
     )

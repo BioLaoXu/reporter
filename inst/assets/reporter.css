@@ -763,3 +763,50 @@ body.rp-style-card .rp-toc {
 }
 body.rp-style-card .rp-toc-link.active,
 body.rp-style-card .rp-toc-module-link.active { background: #F0F3FD; color: var(--rp-primary, #0D6E8C); }
+
+/* ==========================================================================
+   lite engine — native data grids (P1, dual-engine)
+   Loaded by all skins; active only when render engine = "lite".
+   Styling per 报告优化.md §5.1 (scientific data tables).
+   ========================================================================== */
+.rp-grid { margin: 10px 0; }
+.rp-grid-toolbar {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 8px;
+}
+.rp-grid-search {
+  flex: 0 1 240px; padding: 4px 10px;
+  font-size: 12.5px; font-family: inherit;
+  border: 1px solid var(--rp-border, #D8E1E8); border-radius: 3px;
+  color: var(--rp-text, #18222C);
+  background: #fff;
+}
+.rp-grid-search:focus { outline: none; border-color: var(--rp-primary, #0D6E8C); }
+.rp-grid-export {
+  padding: 4px 10px; font-size: 12px; cursor: pointer;
+  font-family: inherit; font-weight: 500;
+  border: 1px solid var(--rp-border, #D8E1E8); border-radius: 3px;
+  background: #fff; color: var(--rp-text-mid, #425262);
+}
+.rp-grid-export:hover { border-color: var(--rp-primary, #0D6E8C); color: var(--rp-primary, #0D6E8C); }
+.rp-grid-count { font-size: 12px; color: var(--rp-text-dim, #6C7C8C); font-variant-numeric: tabular-nums; }
+
+.rp-grid .rp-table-wrap { overflow-x: auto; border: 1px solid var(--rp-border, #D8E1E8); background: #fff; }
+.rp-grid table.rp-table { width: 100%; border-collapse: collapse; font-size: 12.8px; }
+.rp-grid table.rp-table thead th {
+  background: #F4F7FA; color: var(--rp-text, #18222C); font-weight: 600;
+  padding: 8px 10px; border-bottom: 2px solid #CBD5E1;
+  text-align: left; white-space: nowrap; user-select: none;
+}
+.rp-grid table.rp-table thead th.num { text-align: right; }
+.rp-grid table.rp-table thead th.rp-sort-asc::after { content: " ↑"; color: var(--rp-primary, #0D6E8C); }
+.rp-grid table.rp-table thead th.rp-sort-desc::after { content: " ↓"; color: var(--rp-primary, #0D6E8C); }
+.rp-grid table.rp-table tbody td {
+  padding: 6.5px 10px; border-bottom: 1px solid var(--rp-border, #EDF1F5);
+}
+.rp-grid table.rp-table tbody tr:nth-child(even) { background: var(--rp-bg-panel, #F7F9FB); }
+.rp-grid table.rp-table tbody tr:hover { background: #F0F4F6; }
+.rp-grid table.rp-table td.num {
+  text-align: right; font-family: var(--rp-font-mono, Consolas, monospace);
+  font-variant-numeric: tabular-nums;
+}
