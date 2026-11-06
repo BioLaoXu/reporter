@@ -430,6 +430,13 @@ gallery <- function(images, title = NULL, caption = NULL, description = NULL,
   if (is.null(images) || length(images) == 0L) {
     return(empty_block())
   }
+  ## keep only real raster/vector image files: QC/Pipeline dirs usually
+  ## ship .png next to .pdf twins, and <img> cannot render a PDF data URI
+  images <- images[grepl("\\.(png|jpe?g|webp|svg|gif)$",
+    as.character(images), ignore.case = TRUE, perl = TRUE)]
+  if (is.null(images) || length(images) == 0L) {
+    return(empty_block("目录中未找到可嵌入的图片文件（仅 PDF/其他格式）。"))
+  }
   ## single-image graceful degradation: arrows/search/list would be
   ## dead chrome — render a plain (lightbox-enabled) figure instead
   if (length(images) == 1L) {

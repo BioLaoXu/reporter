@@ -202,6 +202,9 @@ spec_layer_module <- function(layer, sp) {
           else file.path(rp_char1(layer$dir), fig_dir)
         imgs <- ctx$find(rp_char1(fld$pattern) %||% ".*\\.png$",
           dir = fig_dir, recursive = TRUE, key = "")
+        ## drop non-raster hits (PDF twins of the PNGs etc.)
+        imgs <- imgs[grepl("\\.(png|jpe?g|webp|svg|gif)$",
+          as.character(imgs), ignore.case = TRUE, perl = TRUE)]
         content <- if (!length(imgs)) {
           empty_block(paste0("未找到匹配的图：", fld$pattern %||% "*.png"))
         } else if (length(imgs) == 1L) {
