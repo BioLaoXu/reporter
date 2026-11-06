@@ -72,7 +72,7 @@ reporter_theme <- function(preset = c("smzy", "jinyu", "blank", "default"),
                            caption_lang = c("en", "zh"),
                            footer_note = NULL,
                            extra_css = NULL,
-                           cover_mode = "banner",
+                           cover_mode = "first_block",
                            extra_variables = list()) {
   preset <- match.arg(preset)
   style <- match.arg(style)

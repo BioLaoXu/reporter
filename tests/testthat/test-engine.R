@@ -82,14 +82,15 @@ test_that("sci_v1 standalone template: cover eyebrow + meta grid + toc header", 
   html <- paste(readLines(res$output, warn = FALSE), collapse = "\n")
   ## template stylesheet loaded
   expect_match(html, "reporter-sci_v1.css", fixed = TRUE)
-  ## cover: eyebrow badges + meta grid (5 filled cells)
-  expect_match(html, "rp-cover-eyebrow", fixed = TRUE)
-  expect_match(html, "ANALYSIS REPORT", fixed = TRUE)
+  ## cover_mode defaults to first_block: no cover card, the standard
+  ## project-info module renders the meta grid as block 01
+  expect_false(grepl('<div class="rp-cover-eyebrow"', html, fixed = TRUE))
   expect_match(html, "rp-meta-grid", fixed = TRUE)
+  expect_match(html, "项目信息与实验设计", fixed = TRUE)
   expect_true(length(gregexpr("rp-meta-cell", html, fixed = TRUE)[[1]]) >= 5L)
-  ## toc header with counter
+  ## toc header with counter (project block added -> 13 modules)
   expect_match(html, "报告目录 · CONTENTS", fixed = TRUE)
-  expect_match(html, "01 / 12", fixed = TRUE)
+  expect_match(html, "01 / 13", fixed = TRUE)
   ## template primitives exported
   expect_true(exists("meta_grid") && exists("kpi_strip") && exists("qc_pill"))
 })

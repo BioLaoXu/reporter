@@ -1,9 +1,12 @@
-/* ======================================================================
- * reporter-sci_v1.css — standalone template extracted from
- * sp20260727007.html (NGS-REPORTER analysis delivery, v2.0 contract)
- * Loaded ONLY when reporter_theme(style = "sci_v1") — after
+/* ==========================================================================
+ * reporter-sci_v1.css — standalone template (sci_v1)
+ * Base: BioLaoXu_reporter_v2_bundle expert stylesheet (verbatim, it IS the
+ * reference page's stylesheet). Loaded ONLY when style = "sci_v1", after
  * reporter.css so these rules win the cascade.
- * ====================================================================== */
+ * Followed by a normalization layer that re-skins reporter-specific
+ * components (badges/details/kpi/refs/gallery...) to this design language.
+ * ========================================================================== */
+
 
 /* ==========================================================================
    NGS-Reporter v2.0 — Integrated Scientific Editorial & DRAGEN Card Architecture
@@ -1388,21 +1391,360 @@ body.header-dossier .rp-qc-stamp-card {
 
 
 /* ==========================================================================
-   NORMALIZATION LAYER — every reporter component re-skinned to the
+   PRODUCTION v3 UPGRADE:
+   1. Taller, Authoritative 66px + 38px Instrument Console Header (No meta demo buttons)
+   2. Global Gene/Section Instant Search Bar in Navbar
+   3. Full-Featured Smooth Sliding Carousel Component (.rp-carousel)
+   ========================================================================== */
+:root {
+  --rp-navbar-h: 66px;
+}
+
+.rp-navbar {
+  height: 66px !important;
+  padding: 0 24px !important;
+  background: #0B192C !important;
+  border-bottom: 1px solid #1E293B !important;
+  box-shadow: 0 2px 12px rgba(7, 16, 29, 0.18) !important;
+}
+
+.rp-logo-mark {
+  width: 34px !important;
+  height: 34px !important;
+  background: linear-gradient(135deg, #0D6E8C, #094A60) !important;
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  border-radius: 5px !important;
+}
+.rp-logo-box {
+  padding-right: 16px !important;
+  border-right: 1px solid #26354D !important;
+  gap: 11px !important;
+}
+.rp-logo-name {
+  font-size: 14px !important;
+  font-weight: 800 !important;
+  color: #FFFFFF !important;
+  letter-spacing: 0.5px !important;
+}
+.rp-logo-sub {
+  font-size: 10.5px !important;
+  color: #7DD3FC !important;
+  margin-top: 2px;
+}
+
+.rp-header-title-block {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+  padding-left: 4px;
+}
+.rp-header-main-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: #FFFFFF;
+  letter-spacing: 0.2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.rp-header-sub-meta {
+  font-size: 11.5px;
+  color: #94A3B8;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 2px;
+}
+.rp-header-sub-meta code {
+  font-family: var(--rp-font-mono);
+  color: #E2E8F0;
+  background: rgba(255,255,255,0.08);
+  padding: 1px 6px;
+  border-radius: 3px;
+  font-size: 11px;
+}
+
+/* Global Search Box in Navbar */
+.rp-global-search-wrap {
+  position: relative;
+  width: 270px;
+  max-width: 28vw;
+}
+.rp-global-search-input {
+  width: 100%;
+  height: 34px;
+  background: rgba(15, 23, 42, 0.75);
+  border: 1px solid #334155;
+  border-radius: 4px;
+  padding: 0 12px 0 32px;
+  color: #F8FAFC;
+  font-family: inherit;
+  font-size: 12.5px;
+  outline: none;
+  transition: border-color 0.15s, background 0.15s;
+}
+.rp-global-search-input::placeholder {
+  color: #94A3B8;
+}
+.rp-global-search-input:focus {
+  border-color: #38BDF8;
+  background: #0F172A;
+}
+.rp-global-search-icon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94A3B8;
+  pointer-events: none;
+}
+.rp-search-dropdown {
+  position: absolute;
+  top: 40px;
+  left: 0;
+  right: 0;
+  background: #FFFFFF;
+  border: 1px solid #CBD5E1;
+  border-radius: 4px;
+  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.18);
+  max-height: 300px;
+  overflow-y: auto;
+  z-index: 2000;
+  display: none;
+}
+.rp-search-dropdown.open {
+  display: block;
+}
+.rp-search-item {
+  padding: 7px 12px;
+  font-size: 12px;
+  color: var(--rp-ink);
+  border-bottom: 1px solid #F1F5F9;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.rp-search-item:hover {
+  background: #F0F9FF;
+  color: var(--rp-primary);
+}
+
+/* Secondary Parameter & Quick-Jump Sub-Bar */
+.rp-subbar {
+  background: #FFFFFF;
+  border-bottom: 1px solid #D5DCE2;
+  padding: 9px 32px;
+  margin: -28px -40px 24px -40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
+}
+.rp-subbar-params {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  font-size: 12px;
+  color: var(--rp-ink-mid);
+}
+.rp-subbar-param-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.rp-subbar-param-item b {
+  color: var(--rp-ink);
+}
+.rp-subbar-sep {
+  color: #CBD5E1;
+}
+
+/* ==========================================================================
+   PROMINENT MULTI-SLIDE CAROUSEL COMPONENT (.rp-carousel)
+   Smooth horizontal track + prev/next overlay buttons + thumbnail pills + search
+   ========================================================================== */
+.rp-carousel {
+  border: 1px solid #CBD5E1;
+  border-radius: 5px;
+  background: #FFFFFF;
+  margin: 16px 0 22px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(15, 32, 48, 0.05);
+}
+.rp-carousel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  background: #F8FAFC;
+  border-bottom: 1px solid #E2E8F0;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.rp-carousel-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.rp-carousel-badge {
+  font-family: var(--rp-font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  background: var(--rp-primary);
+  color: #fff;
+  padding: 2px 8px;
+  border-radius: 3px;
+}
+.rp-carousel-title {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--rp-ink);
+}
+.rp-carousel-counter {
+  font-family: var(--rp-font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--rp-ink-dim);
+  background: #E2E8F0;
+  padding: 1px 8px;
+  border-radius: 99px;
+}
+.rp-carousel-tools {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.rp-carousel-viewport {
+  position: relative;
+  overflow: hidden;
+  background: #FFFFFF;
+}
+.rp-carousel-track {
+  display: flex;
+  transition: transform 0.38s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+.rp-carousel-slide {
+  flex: 0 0 100%;
+  min-width: 100%;
+  padding: 18px 60px 12px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.rp-carousel-slide img {
+  max-width: 100%;
+  max-height: 620px;
+  width: auto;
+  height: auto;
+  border: 1px solid #E2E8F0;
+  border-radius: 3px;
+  cursor: zoom-in;
+  background: #fff;
+  transition: box-shadow 0.2s;
+}
+.rp-carousel-slide img:hover {
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.1);
+}
+.rp-carousel-caption {
+  margin-top: 10px;
+  font-size: 12.5px;
+  color: var(--rp-ink-mid);
+  text-align: left;
+  max-width: 960px;
+  line-height: 1.6;
+  background: #F8FAFC;
+  border-left: 3px solid var(--rp-primary);
+  padding: 8px 12px;
+  width: 100%;
+}
+.rp-carousel-nav {
+  position: absolute;
+  top: 46%;
+  transform: translateY(-50%);
+  width: 38px;
+  height: 58px;
+  border: 1px solid #CBD5E1;
+  background: rgba(255, 255, 255, 0.94);
+  color: var(--rp-primary-dark);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 5;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08);
+  transition: all 0.16s;
+}
+.rp-carousel-nav:hover {
+  background: var(--rp-primary);
+  border-color: var(--rp-primary);
+  color: #FFFFFF;
+}
+.rp-carousel-prev { left: 12px; }
+.rp-carousel-next { right: 12px; }
+
+.rp-carousel-footer {
+  padding: 10px 16px;
+  background: #F8FAFC;
+  border-top: 1px solid #E2E8F0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.rp-carousel-dots {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.rp-carousel-dot {
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 11px;
+  border-radius: 3px;
+  border: 1px solid #CBD5E1;
+  background: #FFFFFF;
+  color: var(--rp-ink-mid);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.rp-carousel-dot:hover {
+  border-color: var(--rp-primary);
+  color: var(--rp-primary);
+}
+.rp-carousel-dot.active {
+  background: var(--rp-primary);
+  border-color: var(--rp-primary);
+  color: #FFFFFF;
+}
+
+@media print {
+  .rp-subbar { margin: 0 0 12px 0 !important; padding: 6px 0 !important; }
+  .rp-carousel-track { display: block !important; transform: none !important; }
+  .rp-carousel-slide { padding: 8px 0 !important; page-break-inside: avoid; }
+  .rp-carousel-nav, .rp-carousel-footer, .rp-carousel-tools { display: none !important; }
+}
+
+
+NORMALIZATION LAYER — every reporter component re-skinned to the
    sci_v1 design language (no classic-card leakage). Components without
    a counterpart in the reference page follow its design language.
    ========================================================================== */
-body.rp-style-sci_v1 .rp-content {
-  margin-left: var(--rp-toc-w);
-  padding: 28px 40px 80px;
-}
-body.rp-style-sci_v1 .rp-layout { display: block; padding-top: var(--rp-navbar-h); }
-body.rp-style-sci_v1 .rp-container { max-width: 1220px; margin: 0 auto; }
 body.rp-style-sci_v1 .rp-body { font-size: 14px; line-height: 1.68; }
 body.rp-style-sci_v1 .rp-text { font-size: 14px; line-height: 1.68; margin: 10px 0; }
-body.rp-style-sci_v1 .rp-toc-inner { padding: 16px 12px 36px; }
-body.rp-style-sci_v1 .rp-cover-title { font-size: 26px; }
-body.rp-style-sci_v1 .rp-cover-subtitle { font-size: 11.5px; }
 
 /* ---- badges: plain text prefix, no pills ---- */
 body.rp-style-sci_v1 .rp-badge,
@@ -1570,3 +1912,86 @@ body.rp-style-sci_v1 .rp-steps li::before {
   font-family: var(--rp-font-mono); font-weight: 700;
   color: var(--rp-primary);
 }
+
+
+/* ==========================================================================
+   sci_v1 shell calibration — deep-slate navbar, grey page, white module
+   cards, primary number chips (matches reporter_template_v2.html)
+   ========================================================================== */
+body.rp-style-sci_v1 {
+  background: var(--rp-bg-page, #F1F5F9);
+}
+body.rp-style-sci_v1 .rp-navbar {
+  background: var(--rp-primary-dark, #0B192C);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+body.rp-style-sci_v1 .rp-navbar-title,
+body.rp-style-sci_v1 .rp-logo-name { color: #fff; }
+body.rp-style-sci_v1 .rp-logo-sub,
+body.rp-style-sci_v1 .rp-navbar-badge { color: rgba(255, 255, 255, 0.72); }
+body.rp-style-sci_v1 .rp-navbar-link { color: rgba(255, 255, 255, 0.85); }
+body.rp-style-sci_v1 .rp-navbar-link:hover { background: rgba(255, 255, 255, 0.12); }
+body.rp-style-sci_v1 .rp-toc-toggle,
+body.rp-style-sci_v1 .rp-util-btn,
+body.rp-style-sci_v1 .rp-btn-pdf {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.24);
+  color: #fff;
+}
+body.rp-style-sci_v1 .rp-toc-toggle:hover,
+body.rp-style-sci_v1 .rp-util-btn:hover { background: rgba(255, 255, 255, 0.16); }
+body.rp-style-sci_v1 .rp-nav-crumb-code {
+  background: var(--rp-primary); color: #fff; padding: 2px 7px; border-radius: 2px;
+}
+body.rp-style-sci_v1 .rp-toc { background: #fff; }
+body.rp-style-sci_v1 .rp-toc-header {
+  display: flex; justify-content: space-between;
+  font-size: 11.5px; font-weight: 700; letter-spacing: 0.5px;
+  color: var(--rp-ink-dim, #6C7C8C);
+  border-bottom: 1px solid var(--rp-line, #DCE3EA);
+  padding-bottom: 8px; margin-bottom: 10px;
+}
+body.rp-style-sci_v1 .rp-toc-link.active {
+  background: var(--rp-primary-light, #EBF4F7);
+  color: var(--rp-primary); border-left-color: var(--rp-primary);
+}
+body.rp-style-sci_v1 .rp-module {
+  background: #fff;
+  border: 1px solid #D5DCE2;
+  border-radius: 5px;
+  box-shadow: 0 1px 3px rgba(15, 32, 48, 0.06);
+  padding: 24px 28px;
+  margin-bottom: 22px;
+  border-bottom: 1px solid #D5DCE2;
+}
+body.rp-style-sci_v1 .rp-module-num {
+  font-family: var(--rp-font-mono, Consolas, monospace);
+  font-size: 12px; font-weight: 700;
+  background: var(--rp-primary); color: #fff;
+  padding: 3px 8px; border-radius: 2px; margin-right: 12px;
+  vertical-align: 3px;
+}
+body.rp-style-sci_v1 .rp-module-title {
+  font-size: 20px; font-weight: 700; color: var(--rp-ink, #18222C);
+  border-bottom: none;
+}
+body.rp-style-sci_v1 .rp-subsection {
+  font-size: 15.5px; font-weight: 700; color: var(--rp-ink, #18222C);
+  border-left: 3px solid var(--rp-primary);
+  background: var(--rp-bg-panel, #F7F9FB);
+  padding: 6px 12px; border-radius: 0 2px 2px 0;
+  margin-top: 26px;
+}
+
+/* module header: number chip left, title left-aligned (reference layout) */
+body.rp-style-sci_v1 .rp-module-header {
+  display: flex; align-items: center; gap: 0;
+}
+body.rp-style-sci_v1 .rp-module-title {
+  text-align: left; flex: 1;
+  text-indent: 0; margin: 0;
+}
+body.rp-style-sci_v1 .rp-module-title::after { display: none; }
+body.rp-style-sci_v1 .rp-module-body { text-indent: 0; }
+body.rp-style-sci_v1 .rp-grid table.rp-table td.num,
+body.rp-style-sci_v1 .rp-grid table.rp-table th.num { text-align: right !important; }
