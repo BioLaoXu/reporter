@@ -48,7 +48,13 @@ rp_table_lite <- function(data, dom_id = NULL, toolbar = TRUE,
                    placeholder = "搜索…", `aria-label` = "search"),
         tags$button(class = "rp-grid-export", type = "button",
                     `data-rp-grid` = dom_id, "导出 CSV"),
-        tags$span(class = "rp-grid-count")
+        tags$span(class = "rp-grid-count"),
+        tags$span(class = "rp-grid-pager",
+          tags$button(class = "rp-grid-page-btn", `data-page` = "prev",
+            type = "button", "上一页"),
+          tags$span(class = "rp-grid-page-info", "1 / 1"),
+          tags$button(class = "rp-grid-page-btn", `data-page` = "next",
+            type = "button", "下一页"))
       )
     },
     tags$div(

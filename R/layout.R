@@ -380,21 +380,18 @@ rp_footer <- function(meta, brand, theme, n_errors = 0L) {
 ## ---------------------------------------------------------------------
 
 #' @noRd
-rp_navbar_sci_v1 <- function(title, meta, brand, qc_text = NULL) {
+rp_navbar_sci_v1 <- function(title, meta, brand, qc_text = NULL,
+                             nav_title = NULL) {
   svg_toggle <- tags$svg(width = "15", height = "15", viewBox = "0 0 16 16",
     fill = "none", stroke = "currentColor", `stroke-width` = "1.6",
     tags$path(d = "M2.5 4h11M2.5 8h7.5M2.5 12h11"))
   svg_mark <- tags$svg(width = "14", height = "14", viewBox = "0 0 16 16",
     fill = "none", stroke = "currentColor", `stroke-width` = "1.7",
     tags$path(d = "M3 2.5c3.5 0 6.5 11 10 11M13 2.5c-3.5 0-6.5 11-10 11M4.5 5h7M4.5 11h7"))
+  ## centered report title (short name passed via nav_title/report_title)
   crumb <- tags$div(class = "rp-nav-state-top",
-    if (!is.null(meta$code) && nzchar(meta$code %||% "")) {
-      tags$span(class = "rp-nav-crumb-code", meta$code)
-    },
-    tags$span(meta$title %||% title),
-    tags$span(style = "color:var(--rp-line);", "|"),
-    if (!is.null(meta$species)) tags$span(meta$species)
-  )
+    tags$span(class = "rp-nav-report-title",
+      HTML(nav_title %||% meta$title %||% title)))
   tagList(
     tags$header(class = "rp-navbar",
       tags$div(class = "rp-nav-brand",
@@ -411,13 +408,6 @@ rp_navbar_sci_v1 <- function(title, meta, brand, qc_text = NULL) {
       ),
       tags$div(class = "rp-nav-center", crumb),
       tags$div(class = "rp-nav-right",
-        if (!is.null(qc_text) && nzchar(qc_text)) {
-          tags$button(class = "rp-util-btn rp-util-qc", type = "button",
-            title = "质控基线",
-            tags$span(class = "rp-qc-dot"),
-            tags$span(qc_text)
-          )
-        },
         tags$button(class = "rp-util-btn", type = "button",
           title = "打开浏览器打印对话框，另存为 PDF",
           onclick = "exportReportToPDF()",
@@ -454,12 +444,27 @@ rp_toc_sci_v1 <- function(toc_groups) {
 }
 
 #' @noRd
-rp_module_section_sci_v1 <- function(id, title, number, content) {
+rp_module_section_sci_v1 <- function(id, title, number, content,
+                                     path_note = NULL, link_path = NULL) {
+  pill <- NULL
+  if (!is.null(path_note) && nzchar(path_note)) {
+    pill <- tags$span(class = "rp-filepath rp-module-path",
+      if (!is.null(link_path) && nzchar(link_path)) {
+        tags$a(href = paste0("file://", link_path), target = "_blank",
+          tags$span(rp_icon("folder"), class = "rp-filepath-icon"),
+          tags$code(path_note))
+      } else {
+        tags$code(path_note)
+      }
+    )
+  }
   tags$section(class = "rp-module", id = id,
     tags$div(class = "rp-module-header",
       tags$span(class = "rp-module-num", sprintf("%02d", number)),
-      tags$h2(class = "rp-module-title", HTML(title))
+      tags$h2(class = "rp-module-title", HTML(title)),
+      pill
     ),
     tags$div(class = "rp-module-body", content)
   )
 }
+

@@ -1997,3 +1997,57 @@ body.rp-style-sci_v1 .rp-module-title::after { display: none; }
 body.rp-style-sci_v1 .rp-module-body { text-indent: 0; }
 body.rp-style-sci_v1 .rp-grid table.rp-table td.num,
 body.rp-style-sci_v1 .rp-grid table.rp-table th.num { text-align: right !important; }
+
+/* ==========================================================================
+   sci_v1 polish round 2 (user feedback 2026-11-06)
+   ========================================================================== */
+/* 1. navbar: softer deep-teal (primary-dark of the contract), centered
+      report title, no pills */
+body.rp-style-sci_v1 .rp-navbar {
+  background: #073B4C;
+}
+body.rp-style-sci_v1 .rp-nav-center { flex: 1; text-align: center; }
+body.rp-style-sci_v1 .rp-nav-report-title {
+  font-size: 16px; font-weight: 700; color: #fff;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+body.rp-style-sci_v1 .rp-nav-state-top { display: block; }
+body.rp-style-sci_v1 .rp-nav-right { flex: 0 0 auto; }
+
+/* 2. module title underline: 2px primary rule under the heading */
+body.rp-style-sci_v1 .rp-module-header {
+  border-bottom: 2px solid var(--rp-primary, #0D5C75);
+  padding-bottom: 8px; margin-bottom: 16px;
+}
+
+/* 3. header path pill: right side of the module header, mono, dim */
+body.rp-style-sci_v1 .rp-module-path {
+  margin-left: auto; flex: 0 0 auto;
+  font-size: 11px;
+}
+body.rp-style-sci_v1 .rp-module-path a {
+  color: var(--rp-ink-dim, #6C7C8C); text-decoration: none;
+}
+body.rp-style-sci_v1 .rp-module-path a:hover { color: var(--rp-primary); }
+body.rp-style-sci_v1 .rp-module-path code {
+  background: transparent; padding: 0; color: inherit;
+}
+
+/* 4. explanation details: smaller, visually distinct from the main grid */
+body.rp-style-sci_v1 .rp-details .rt-td,
+body.rp-style-sci_v1 .rp-details .rt-th {
+  font-size: 11.5px; padding: 4px 8px;
+}
+body.rp-style-sci_v1 .rp-details .rt-th {
+  background: var(--rp-bg-panel, #F7F9FB); font-weight: 600;
+}
+body.rp-style-sci_v1 .rp-details { background: var(--rp-bg-panel, #FBFDFF); }
+
+/* 5. gallery: clickable arrows above the track, compact caption chips */
+body.rp-style-sci_v1 .rp-gallery-arrow { z-index: 10; }
+body.rp-style-sci_v1 .rp-gallery-track { z-index: 1; }
+body.rp-style-sci_v1 .rp-gallery-item {
+  border-radius: 3px; padding: 3px 10px;
+  font-size: 11px; max-width: 220px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}

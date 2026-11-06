@@ -387,14 +387,16 @@ details_block <- function(content, summary = "点击查看详情",
 #' @param path character(1). Directory or file path to display.
 #' @return A `htmltools` [tagList()].
 #' @export
-file_path_note <- function(path) {
-  tagList(
-    tags$p(
-      class = "rp-filepath",
+file_path_note <- function(path, link = NULL) {
+  body <- if (!is.null(link) && nzchar(link)) {
+    tags$a(href = paste0("file://", link), target = "_blank",
       tags$span(rp_icon("folder"), class = "rp-filepath-icon"),
-      tags$code(path)
-    )
-  )
+      tags$code(path))
+  } else {
+    list(tags$span(rp_icon("folder"), class = "rp-filepath-icon"),
+      tags$code(path))
+  }
+  tagList(tags$p(class = "rp-filepath", body))
 }
 
 #' Image gallery

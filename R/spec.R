@@ -119,6 +119,11 @@ citations <- function(text, keymap, missing = NULL) {
 }
 
 ## internal: assemble one layer as a module (closes over the spec layer)
+## internal: the layer's search directory hint for clickable path pills
+ctx_dir_hint <- function(sp, layer) {
+  file.path(rp_char1(sp$result) %||% "", rp_char1(layer$dir) %||% "")
+}
+
 spec_layer_module <- function(layer, sp) {
   id <- rp_char1(layer$id) %||% rp_slug(layer$title, "layer-")
   title <- rp_char1(layer$title) %||% id
@@ -140,6 +145,23 @@ spec_layer_module <- function(layer, sp) {
   }
 
   blocks <- layer$blocks
+  ## header path pill: layer-level note wins, else the first block note;
+  ## click target opens result_path/<layer dir> in a new tab
+  header_note <- rp_char1(layer$path_note)
+  header_link <- NULL
+  if (is.null(header_note)) {
+    for (b in blocks) {
+      key <- names(b)[1L]
+      fld <- if (is.list(b[[key]])) b[[key]] else b
+      pn <- rp_char1(fld$path_note)
+      if (!is.null(pn)) {
+        header_note <- pn
+        header_link <- file.path(ctx_dir_hint(sp, layer),
+          rp_char1(fld$dir) %||% "")
+        break
+      }
+    }
+  }
   if (!is.null(blocks) && !is.list(blocks)) blocks <- list(blocks)
 
   render <- function(ctx) {
@@ -240,7 +262,6 @@ spec_layer_module <- function(layer, sp) {
           tags$p(class = "rp-fig-desc",
                  HTML(rp_inline_md(rp_char1(desc))))
         },
-        if (!is.null(path_note)) file_path_note(path_note)
       )
     })
     tail_parts <- if (length(layer$notes)) {
@@ -257,7 +278,9 @@ spec_layer_module <- function(layer, sp) {
     when = if (!is.null(when_type)) {
       function(ctx) identical(as.character(ctx$meta$type), when_type)
     },
-    render = render
+    render = render,
+    path_note = header_note,
+    link_path = header_link
   )
 }
 
@@ -279,10 +302,14 @@ spec_layer_module <- function(layer, sp) {
 render_spec <- function(spec, result_path = NULL, output = "report.html",
                         title = NULL, standalone = TRUE, theme = NULL,
                         quiet = FALSE, engine = NULL,
-                        print_html = FALSE, qc_pill = NULL) {
+                        print_html = FALSE, qc_pill = NULL,
+                        nav_title = NULL) {
   sp <- load_spec(spec)
   spec_dir <- attr(sp, "spec_dir")
   result_path <- rp_char1(result_path) %||% rp_char1(sp$result)
+  ## write the resolved path back so nested helpers (path pill links,
+  ## scaffolds) see the actual directory rather than a placeholder
+  sp$result <- result_path
   if (is.null(result_path)) {
     stop("reporter: no result directory (pass result_path or set `result`)",
       call. = FALSE)
@@ -352,5 +379,6 @@ render_spec <- function(spec, result_path = NULL, output = "report.html",
     standalone = standalone,
     title = title %||% rp_char1(sp$title) %||% "Analysis Report",
     quiet = quiet, engine = engine %||% rp_char1(sp$engine),
-    print_html = print_html, qc_pill = qc_pill)
+    print_html = print_html, qc_pill = qc_pill,
+    nav_title = nav_title %||% rp_char1(sp$nav_title))
 }

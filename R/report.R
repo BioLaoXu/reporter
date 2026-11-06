@@ -33,7 +33,9 @@
 #' )
 module <- function(id, title, render,
                    required_dirs = character(0),
-                   when = NULL) {
+                   when = NULL,
+                   path_note = NULL,
+                   link_path = NULL) {
   rp_check_chr(id, 1L, allow_null = FALSE, arg = "id")
   rp_check_chr(title, 1L, allow_null = FALSE, arg = "title")
   if (!is.function(render)) {
@@ -50,7 +52,9 @@ module <- function(id, title, render,
       title = title,
       render = render,
       required_dirs = if (is.null(required_dirs)) character(0) else required_dirs,
-      when = when
+      when = when,
+      path_note = path_note,
+      link_path = link_path
     ),
     class = "reporter_module"
   )
@@ -213,6 +217,7 @@ render_report <- function(report, output = "report.html",
                           title = NULL, only = NULL, quiet = FALSE, json_sidecar = FALSE,
                           engine = NULL, print_mode = FALSE,
                           qc_pill = NULL, print_max_rows = 100,
+                          nav_title = NULL,
                           print_html = FALSE) {
   if (!inherits(report, "reporter_report")) {
     stop("`report` must be created by reporter::create_report()", call. = FALSE)
@@ -316,7 +321,9 @@ render_report <- function(report, output = "report.html",
       )
     }
     rendered[[length(rendered) + 1L]] <- list(
-      id = paste0("mod-", mod$id), title = mod$title, content = content
+      id = paste0("mod-", mod$id), title = mod$title,
+      path_note = mod$path_note, link_path = mod$link_path,
+      content = content
     )
     if (!quiet) message("reporter: rendered module '", mod$id, "'")
   }
@@ -418,7 +425,8 @@ render_report <- function(report, output = "report.html",
 
   module_links <- lapply(rendered, function(r) list(id = r$id, title = r$title))
   navbar <- if (use_sci_v1) {
-    rp_navbar_sci_v1(title, ctx$meta, theme$brand, qc_text = qc_pill)
+    rp_navbar_sci_v1(title, ctx$meta, theme$brand,
+      qc_text = qc_pill, nav_title = nav_title)
   } else {
     rp_navbar(title, ctx$meta, theme$brand, module_links)
   }
@@ -439,7 +447,9 @@ render_report <- function(report, output = "report.html",
       },
       lapply(seq_along(rendered), function(i) {
         rp_module_section_sci_v1(rendered[[i]]$id,
-          rendered[[i]]$title, i, rendered[[i]]$content)
+          rendered[[i]]$title, i, rendered[[i]]$content,
+          path_note = rendered[[i]]$path_note,
+          link_path = rendered[[i]]$link_path)
       })
     )
   } else {

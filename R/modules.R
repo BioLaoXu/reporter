@@ -117,7 +117,6 @@ mod_references <- function(bib_file = NULL, title = "参考文献",
       tagList(
         ctx$subsection("Cited References"),
         reference_list(bib),
-        file_path_note(f)
       )
     }
   )
