@@ -411,12 +411,6 @@ rp_navbar_sci_v1 <- function(title, meta, brand, qc_text = NULL) {
       ),
       tags$div(class = "rp-nav-center", crumb),
       tags$div(class = "rp-nav-right",
-        tags$div(class = "rp-seg-group", title = "顶部 UI 范式",
-          tags$span(class = "rp-seg-label", "顶部范式:"),
-          tags$button(class = "rp-seg-btn active", type = "button", "A 期刊感知型"),
-          tags$button(class = "rp-seg-btn", type = "button", "B 仪器控制台"),
-          tags$button(class = "rp-seg-btn", type = "button", "C 结题签发卡")
-        ),
         if (!is.null(qc_text) && nzchar(qc_text)) {
           tags$button(class = "rp-util-btn rp-util-qc", type = "button",
             title = "质控基线",
@@ -424,12 +418,6 @@ rp_navbar_sci_v1 <- function(title, meta, brand, qc_text = NULL) {
             tags$span(qc_text)
           )
         },
-        tags$button(class = "rp-util-btn", type = "button", title = "分组语义映射",
-          tags$span("分组映射")),
-        tags$button(class = "rp-util-btn", type = "button", title = "AI 解读",
-          tags$span("AI 解读")),
-        tags$button(class = "rp-util-btn", type = "button", title = "卡片风",
-          tags$span("卡片风")),
         tags$button(class = "rp-util-btn", type = "button",
           title = "打开浏览器打印对话框，另存为 PDF",
           onclick = "exportReportToPDF()",

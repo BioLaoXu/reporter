@@ -1920,6 +1920,8 @@ body.rp-style-sci_v1 .rp-steps li::before {
    ========================================================================== */
 body.rp-style-sci_v1 {
   background: var(--rp-bg-page, #F1F5F9);
+  /* taller command bar (expert final spec: 66px) */
+  --rp-navbar-h: 66px;
 }
 body.rp-style-sci_v1 .rp-navbar {
   background: var(--rp-primary-dark, #0B192C);
