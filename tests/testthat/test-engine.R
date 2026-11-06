@@ -69,3 +69,27 @@ test_that("sci skin applies the design-contract tokens", {
   expect_match(html, "counter-increment: rp-mod", fixed = TRUE)
   expect_match(html, "rp-filepath", fixed = TRUE)
 })
+
+test_that("sci_v1 standalone template: cover eyebrow + meta grid + toc header", {
+  tmp <- make_chip_fixture()
+  ctx <- report_context(tmp, type = "1", project = "P", code = "C",
+                        species = "S")
+  report <- do.call(add_module,
+    c(list(report = create_report(ctx)), chip_report_modules()))
+  out <- tempfile(fileext = ".html")
+  res <- render_report(report, output = out,
+    theme = reporter_theme(preset = "blank", style = "sci_v1"), quiet = TRUE)
+  html <- paste(readLines(res$output, warn = FALSE), collapse = "\n")
+  ## template stylesheet loaded
+  expect_match(html, "reporter-sci_v1.css", fixed = TRUE)
+  ## cover: eyebrow badges + meta grid (5 filled cells)
+  expect_match(html, "rp-cover-eyebrow", fixed = TRUE)
+  expect_match(html, "ANALYSIS REPORT", fixed = TRUE)
+  expect_match(html, "rp-meta-grid", fixed = TRUE)
+  expect_true(length(gregexpr("rp-meta-cell", html, fixed = TRUE)[[1]]) >= 5L)
+  ## toc header with counter
+  expect_match(html, "报告目录 · CONTENTS", fixed = TRUE)
+  expect_match(html, "01 / 12", fixed = TRUE)
+  ## template primitives exported
+  expect_true(exists("meta_grid") && exists("kpi_strip") && exists("qc_pill"))
+})

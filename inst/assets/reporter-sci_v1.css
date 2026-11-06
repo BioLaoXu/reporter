@@ -1,0 +1,1388 @@
+/* ======================================================================
+ * reporter-sci_v1.css — standalone template extracted from
+ * sp20260727007.html (NGS-REPORTER analysis delivery, v2.0 contract)
+ * Loaded ONLY when reporter_theme(style = "sci_v1") — after
+ * reporter.css so these rules win the cascade.
+ * ====================================================================== */
+
+/* ==========================================================================
+   NGS-Reporter v2.0 — Integrated Scientific Editorial & DRAGEN Card Architecture
+   Combines reporter v0.1.0 modular shell with targeted bioinformatics analytics.
+   Design Principles ("De-AI-ified"):
+   - Zero decorative gradients, zero emojis, zero bouncy hover cards
+   - Strict tabular numerals (font-variant-numeric: tabular-nums)
+   - ColorBrewer RdBu (#2166AC <-> #F7F7F7 <-> #B2182B) exclusively for expression
+   - Semantic status colors (Green/Amber/Red) exclusively for QC & statistical alerts
+   ========================================================================== */
+:root {
+  --rp-primary: #0D5C75;
+  --rp-primary-dark: #073B4C;
+  --rp-primary-light: #EBF4F7;
+  --rp-up: #B2182B;
+  --rp-up-bg: rgba(178, 24, 43, 0.12);
+  --rp-down: #2166AC;
+  --rp-down-bg: rgba(33, 102, 172, 0.12);
+  --rp-ok: #1F7A4C;
+  --rp-ok-bg: #EAF6F0;
+  --rp-warn: #9A6700;
+  --rp-warn-bg: #FFF8E6;
+  --rp-ink: #18222C;
+  --rp-ink-mid: #425262;
+  --rp-ink-dim: #6C7C8C;
+  --rp-line: #DCE3EA;
+  --rp-line-light: #EDF1F5;
+  --rp-bg-page: #FFFFFF;
+  --rp-bg-panel: #F7F9FB;
+  --rp-bg-subtle: #FBFDFF;
+  --rp-navbar-h: 56px;
+  --rp-toc-w: 256px;
+  --rp-radius: 3px;
+  --rp-font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  --rp-font-mono: "JetBrains Mono", "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  font-family: var(--rp-font-sans);
+  font-size: 14px;
+  line-height: 1.68;
+  color: var(--rp-ink);
+  background: var(--rp-bg-page);
+  font-variant-numeric: tabular-nums;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Skin Mode: DRAGEN Industrial Card Mode */
+body.skin-card {
+  --rp-bg-page: #F2F4F7;
+  --rp-radius: 5px;
+}
+body.skin-card .rp-navbar {
+  background: var(--rp-primary-dark);
+  border-bottom-color: #052936;
+  color: #fff;
+}
+body.skin-card .rp-navbar-title,
+body.skin-card .rp-navbar-meta-item { color: #fff; }
+body.skin-card .rp-navbar-meta-item span { color: rgba(255,255,255,0.72); }
+body.skin-card .rp-toc-toggle,
+body.skin-card .rp-btn-top {
+  background: rgba(255,255,255,0.1);
+  color: #fff;
+  border-color: rgba(255,255,255,0.24);
+}
+body.skin-card .rp-btn-top:hover { background: rgba(255,255,255,0.2); }
+body.skin-card .rp-btn-top.active { background: #fff; color: var(--rp-primary-dark); }
+body.skin-card .rp-module {
+  background: #FFFFFF;
+  border: 1px solid #D5DCE2;
+  border-radius: 5px;
+  box-shadow: 0 1px 3px rgba(15, 32, 48, 0.06);
+  padding: 24px 28px;
+  margin-bottom: 22px;
+}
+
+/* --------------------------------------------------------------------------
+   1. Top Sticky Command Navbar
+   -------------------------------------------------------------------------- */
+.rp-navbar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: var(--rp-navbar-h);
+  z-index: 1000;
+  background: #FFFFFF;
+  border-bottom: 1px solid var(--rp-line);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 18px;
+  gap: 12px;
+}
+
+.rp-navbar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.rp-toc-toggle {
+  width: 32px; height: 32px;
+  border: 1px solid var(--rp-line);
+  background: #fff;
+  color: var(--rp-ink-mid);
+  border-radius: var(--rp-radius);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.15s, color 0.15s;
+}
+.rp-toc-toggle:hover {
+  background: var(--rp-primary-light);
+  color: var(--rp-primary);
+}
+
+.rp-brand-mark {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.rp-brand-tag {
+  font-family: var(--rp-font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  padding: 2px 7px;
+  background: var(--rp-primary);
+  color: #fff;
+  border-radius: 2px;
+}
+.rp-navbar-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--rp-ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.rp-navbar-meta {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 12px;
+  color: var(--rp-ink-mid);
+  border-left: 1px solid var(--rp-line);
+  padding-left: 14px;
+}
+.rp-navbar-meta-item span {
+  color: var(--rp-ink-dim);
+  margin-right: 4px;
+}
+
+.rp-navbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.rp-qc-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 2px;
+  background: var(--rp-ok-bg);
+  color: var(--rp-ok);
+  border: 1px solid #B7DFC9;
+  cursor: pointer;
+}
+.rp-qc-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--rp-ok);
+}
+
+.rp-btn-top {
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 5px 11px;
+  border-radius: var(--rp-radius);
+  border: 1px solid var(--rp-line);
+  background: #fff;
+  color: var(--rp-ink-mid);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.15s;
+}
+.rp-btn-top:hover {
+  border-color: var(--rp-primary);
+  color: var(--rp-primary);
+}
+.rp-btn-top.active {
+  background: var(--rp-primary);
+  border-color: var(--rp-primary);
+  color: #fff;
+}
+
+/* --------------------------------------------------------------------------
+   2. Main Layout: Left Sidebar TOC + Content Area
+   -------------------------------------------------------------------------- */
+.rp-layout {
+  display: flex;
+  padding-top: var(--rp-navbar-h);
+  min-height: 100vh;
+}
+
+.rp-toc {
+  position: fixed;
+  top: var(--rp-navbar-h);
+  bottom: 0;
+  left: 0;
+  width: var(--rp-toc-w);
+  background: var(--rp-bg-panel);
+  border-right: 1px solid var(--rp-line);
+  overflow-y: auto;
+  z-index: 900;
+  padding: 16px 12px 36px;
+  transition: transform 0.22s ease;
+}
+body.toc-collapsed .rp-toc {
+  transform: translateX(-100%);
+}
+
+.rp-toc-header {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--rp-ink-dim);
+  padding: 0 8px 8px;
+  border-bottom: 1px solid var(--rp-line);
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.rp-toc-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.rp-toc-item {
+  margin-bottom: 2px;
+}
+.rp-toc-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 8px;
+  font-size: 12.8px;
+  font-weight: 600;
+  color: var(--rp-ink-mid);
+  text-decoration: none;
+  border-radius: 3px;
+  border-left: 3px solid transparent;
+  transition: all 0.14s;
+}
+.rp-toc-link:hover {
+  background: #EAEFF4;
+  color: var(--rp-ink);
+}
+.rp-toc-link.active {
+  background: #FFFFFF;
+  color: var(--rp-primary);
+  border-left-color: var(--rp-primary);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+}
+.rp-toc-sublist {
+  list-style: none;
+  margin: 2px 0 6px 12px;
+  padding: 0 0 0 8px;
+  border-left: 1px solid var(--rp-line);
+}
+.rp-toc-sublink {
+  display: block;
+  padding: 3.5px 8px;
+  font-size: 12px;
+  color: var(--rp-ink-dim);
+  text-decoration: none;
+  border-radius: 2px;
+}
+.rp-toc-sublink:hover {
+  color: var(--rp-primary);
+}
+.rp-toc-sublink.active {
+  color: var(--rp-primary);
+  font-weight: 600;
+  background: var(--rp-primary-light);
+}
+
+.rp-main {
+  flex: 1;
+  min-width: 0;
+  margin-left: var(--rp-toc-w);
+  padding: 28px 40px 80px;
+  transition: margin-left 0.22s ease;
+}
+body.toc-collapsed .rp-main {
+  margin-left: 0;
+}
+.rp-container {
+  max-width: 1220px;
+  margin: 0 auto;
+}
+
+/* --------------------------------------------------------------------------
+   3. Top Collapsible Drawers (QC Drawer & Group Semantics Mapper)
+   -------------------------------------------------------------------------- */
+.rp-drawer {
+  display: none;
+  background: var(--rp-bg-panel);
+  border: 1px solid var(--rp-line);
+  border-top: 3px solid var(--rp-primary);
+  border-radius: var(--rp-radius);
+  padding: 18px 22px;
+  margin-bottom: 24px;
+}
+.rp-drawer.open {
+  display: block;
+}
+.rp-drawer-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--rp-line);
+}
+.rp-drawer-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--rp-ink);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* --------------------------------------------------------------------------
+   4. Editorial Cover & Project Metadata Strip
+   -------------------------------------------------------------------------- */
+.rp-cover {
+  border-top: 3px solid var(--rp-primary);
+  border-bottom: 1px solid var(--rp-line);
+  padding: 22px 0 20px;
+  margin-bottom: 28px;
+  background: #fff;
+}
+body.skin-card .rp-cover {
+  padding: 24px 28px;
+  border: 1px solid #D5DCE2;
+  border-top: 3px solid var(--rp-primary);
+  border-radius: 5px;
+}
+.rp-cover-eyebrow {
+  font-family: var(--rp-font-mono);
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--rp-primary);
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  margin: 0 0 6px;
+}
+.rp-cover-title {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--rp-ink);
+  margin: 0 0 4px;
+  letter-spacing: -0.2px;
+}
+.rp-cover-sub {
+  font-size: 13.5px;
+  color: var(--rp-ink-dim);
+  margin: 0 0 16px;
+}
+.rp-meta-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 1px;
+  background: var(--rp-line);
+  border: 1px solid var(--rp-line);
+}
+.rp-meta-cell {
+  background: #fff;
+  padding: 8px 12px;
+}
+.rp-meta-label {
+  font-size: 11px;
+  color: var(--rp-ink-dim);
+  margin-bottom: 2px;
+}
+.rp-meta-val {
+  font-size: 12.8px;
+  font-weight: 600;
+  color: var(--rp-ink);
+}
+
+/* --------------------------------------------------------------------------
+   5. Module Sections, Headings, KPI Strip, Callouts
+   -------------------------------------------------------------------------- */
+.rp-module {
+  margin-bottom: 36px;
+  padding-bottom: 28px;
+  border-bottom: 1px solid var(--rp-line);
+  scroll-margin-top: 72px;
+}
+.rp-module-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.rp-module-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--rp-ink);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.rp-module-num {
+  font-family: var(--rp-font-mono);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--rp-primary);
+  background: var(--rp-primary-light);
+  padding: 2px 7px;
+  border-radius: 2px;
+}
+.rp-subsection {
+  font-size: 15.5px;
+  font-weight: 700;
+  color: var(--rp-ink);
+  margin: 24px 0 10px;
+  padding-left: 9px;
+  border-left: 3px solid var(--rp-primary);
+  scroll-margin-top: 72px;
+}
+
+/* KPI Strip */
+.rp-kpi-strip {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border: 1px solid var(--rp-line);
+  background: var(--rp-line);
+  gap: 1px;
+  margin: 16px 0;
+}
+.rp-kpi-card {
+  background: #fff;
+  padding: 14px 16px;
+  position: relative;
+}
+.rp-kpi-card::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--rp-primary);
+}
+.rp-kpi-card.kpi-up::before { background: var(--rp-up); }
+.rp-kpi-card.kpi-down::before { background: var(--rp-down); }
+.rp-kpi-card.kpi-ok::before { background: var(--rp-ok); }
+.rp-kpi-num {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--rp-ink);
+  line-height: 1.2;
+}
+.rp-kpi-num small {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--rp-ink-dim);
+  margin-left: 4px;
+}
+.rp-kpi-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--rp-ink-mid);
+  margin-top: 4px;
+}
+.rp-kpi-sub {
+  font-size: 11.5px;
+  color: var(--rp-ink-dim);
+  margin-top: 2px;
+}
+
+/* Callouts */
+.rp-callout {
+  border-left: 3px solid var(--rp-primary);
+  background: var(--rp-bg-panel);
+  padding: 12px 16px;
+  margin: 14px 0;
+  font-size: 13.5px;
+}
+.rp-callout-key {
+  border-left-color: var(--rp-ok);
+  background: #F4FAF7;
+}
+.rp-callout-guardrail {
+  border-left-color: #C48A1D;
+  background: #FDF9F0;
+}
+.rp-callout-title {
+  font-weight: 700;
+  color: var(--rp-ink);
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.rp-callout ul {
+  margin: 6px 0 0;
+  padding-left: 20px;
+}
+.rp-callout li {
+  margin: 4px 0;
+}
+
+/* Filepath lineage bar */
+.rp-filepath {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--rp-font-mono);
+  font-size: 11.5px;
+  color: var(--rp-ink-dim);
+  background: var(--rp-bg-panel);
+  border: 1px solid var(--rp-line);
+  padding: 3px 10px;
+  border-radius: 2px;
+  margin: 6px 0;
+}
+
+/* --------------------------------------------------------------------------
+   6. Interactive Heatmap & Single-Gene Inspector Workbench
+   -------------------------------------------------------------------------- */
+.rp-tabs-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--rp-line);
+  margin-bottom: 14px;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.rp-tab-group {
+  display: flex;
+  gap: 2px;
+}
+.rp-tab-btn {
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 8px 16px;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--rp-ink-dim);
+  cursor: pointer;
+}
+.rp-tab-btn:hover { color: var(--rp-ink); }
+.rp-tab-btn.active {
+  color: var(--rp-primary);
+  border-bottom-color: var(--rp-primary);
+}
+
+.rp-workbench {
+  display: grid;
+  grid-template-columns: 1fr 370px;
+  gap: 18px;
+  align-items: start;
+}
+
+.rp-hm-panel {
+  border: 1px solid var(--rp-line);
+  background: #fff;
+  padding: 14px;
+}
+
+.rp-hm-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid var(--rp-line-light);
+}
+
+.rp-pill-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.rp-pill {
+  font-family: inherit;
+  font-size: 11.5px;
+  font-weight: 600;
+  padding: 3px 9px;
+  border: 1px solid var(--rp-line);
+  background: #fff;
+  color: var(--rp-ink-mid);
+  border-radius: 2px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.rp-pill:hover { border-color: var(--rp-primary); }
+.rp-pill.active {
+  background: var(--rp-ink);
+  color: #fff;
+  border-color: var(--rp-ink);
+}
+
+.rp-input-search {
+  font-family: inherit;
+  font-size: 12.5px;
+  padding: 4px 10px;
+  border: 1px solid var(--rp-line);
+  border-radius: 2px;
+  width: 190px;
+}
+
+/* Dynamic Heatmap Table Grid */
+.rp-hm-scroll {
+  max-height: 640px;
+  overflow: auto;
+  border: 1px solid var(--rp-line);
+}
+.rp-hm-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11.5px;
+}
+.rp-hm-table th {
+  position: sticky;
+  top: 0;
+  background: #F4F7FA;
+  color: var(--rp-ink);
+  font-weight: 600;
+  padding: 5px 4px;
+  border-bottom: 1px solid var(--rp-line);
+  text-align: center;
+  z-index: 2;
+  white-space: nowrap;
+}
+.rp-hm-table th.hm-col-gene {
+  left: 0;
+  z-index: 3;
+  text-align: left;
+  padding-left: 8px;
+  min-width: 108px;
+}
+.rp-hm-row {
+  cursor: pointer;
+}
+.rp-hm-row:hover td.hm-cell-gene {
+  background: var(--rp-primary-light);
+  color: var(--rp-primary);
+}
+.rp-hm-row.selected-gene td.hm-cell-gene {
+  background: var(--rp-primary);
+  color: #fff;
+}
+.rp-hm-row.selected-gene td.hm-cell-gene .star {
+  color: #FFE066;
+}
+.hm-cell-gene {
+  position: sticky;
+  left: 0;
+  background: #fff;
+  padding: 3px 8px;
+  font-weight: 600;
+  white-space: nowrap;
+  border-right: 1px solid var(--rp-line);
+  border-bottom: 1px solid #F0F3F6;
+  z-index: 1;
+}
+.hm-cell-val {
+  text-align: center;
+  padding: 2px 2px;
+  min-width: 34px;
+  height: 21px;
+  font-family: var(--rp-font-mono);
+  font-size: 10px;
+  border-bottom: 1px solid rgba(255,255,255,0.35);
+  border-right: 1px solid rgba(255,255,255,0.35);
+}
+.hm-grp-sep {
+  border-right: 2px solid #34495E !important;
+}
+
+/* Single-Gene Inspector Card */
+.rp-gene-inspector {
+  position: sticky;
+  top: 72px;
+  border: 1px solid var(--rp-line);
+  border-top: 3px solid var(--rp-primary);
+  background: #fff;
+  padding: 16px;
+}
+.rp-gi-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  border-bottom: 1px solid var(--rp-line);
+  padding-bottom: 10px;
+  margin-bottom: 12px;
+}
+.rp-gi-symbol {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--rp-ink);
+}
+.rp-gi-orth {
+  font-size: 12px;
+  color: var(--rp-ink-dim);
+  font-family: var(--rp-font-mono);
+}
+.rp-gi-bars {
+  margin: 12px 0;
+}
+.rp-gi-bar-row {
+  display: grid;
+  grid-template-columns: 78px 1fr 56px;
+  align-items: center;
+  gap: 8px;
+  margin: 6px 0;
+  font-size: 12px;
+}
+.rp-gi-bar-track {
+  height: 14px;
+  background: #EEF2F6;
+  border-radius: 2px;
+  overflow: hidden;
+  position: relative;
+}
+.rp-gi-bar-fill {
+  height: 100%;
+  border-radius: 2px;
+}
+
+/* --------------------------------------------------------------------------
+   7. Data Tables (Master Interactive Table & Module Summary Table)
+   -------------------------------------------------------------------------- */
+.rp-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--rp-line);
+  background: #fff;
+}
+.rp-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12.8px;
+}
+.rp-table thead th {
+  background: #F4F7FA;
+  color: var(--rp-ink);
+  font-weight: 600;
+  padding: 8px 10px;
+  border-bottom: 2px solid #CBD5E1;
+  text-align: left;
+  white-space: nowrap;
+  user-select: none;
+}
+.rp-table thead th.sortable {
+  cursor: pointer;
+}
+.rp-table thead th.sortable:hover {
+  background: #E6EEF6;
+  color: var(--rp-primary);
+}
+.rp-table tbody td {
+  padding: 6.5px 10px;
+  border-bottom: 1px solid var(--rp-line-light);
+  vertical-align: middle;
+}
+.rp-table tbody tr:hover {
+  background: #F4F8FB;
+}
+.rp-table.compact thead th,
+.rp-table.compact tbody td {
+  padding: 5px 8px;
+  font-size: 12px;
+  white-space: nowrap;
+}
+.num {
+  text-align: right !important;
+  font-family: var(--rp-font-mono);
+  font-variant-numeric: tabular-nums;
+}
+.val-up {
+  color: var(--rp-up);
+  font-weight: 600;
+}
+.val-down {
+  color: var(--rp-down);
+  font-weight: 600;
+}
+.sw {
+  display: inline-block;
+  width: 10px; height: 10px;
+  border-radius: 2px;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+.star {
+  color: var(--rp-up);
+  font-weight: 700;
+  font-family: var(--rp-font-mono);
+}
+
+/* Inline Diverging Bar in Table Cells */
+.div-cell {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+}
+.div-bar {
+  display: inline-block;
+  height: 10px;
+  border-radius: 1px;
+}
+
+/* Static Gallery & Lightbox */
+.rp-gallery-box {
+  border: 1px solid var(--rp-line);
+  background: #fff;
+  padding: 16px;
+  text-align: center;
+}
+.rp-gallery-box img {
+  max-width: 100%;
+  max-height: 760px;
+  height: auto;
+  border: 1px solid var(--rp-line);
+  cursor: zoom-in;
+}
+.rp-lightbox {
+  position: fixed;
+  inset: 0;
+  background: rgba(12, 20, 28, 0.92);
+  z-index: 3000;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+.rp-lightbox.open { display: flex; }
+.rp-lightbox img {
+  max-width: 95vw;
+  max-height: 86vh;
+  background: #fff;
+}
+.rp-lightbox-bar {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+/* Details / Method Accordion */
+details.rp-details {
+  border: 1px solid var(--rp-line);
+  background: var(--rp-bg-panel);
+  margin: 10px 0;
+  border-radius: var(--rp-radius);
+}
+details.rp-details summary {
+  padding: 8px 14px;
+  font-size: 12.8px;
+  font-weight: 600;
+  color: var(--rp-primary-dark);
+  cursor: pointer;
+}
+details.rp-details .rp-details-body {
+  padding: 12px 14px;
+  background: #fff;
+  border-top: 1px solid var(--rp-line);
+}
+
+/* Responsive & Print */
+@media (max-width: 1100px) {
+  .rp-workbench { grid-template-columns: 1fr; }
+  .rp-meta-grid { grid-template-columns: repeat(3, 1fr); }
+  .rp-navbar-meta { display: none; }
+}
+@media (max-width: 860px) {
+  .rp-toc { transform: translateX(-100%); }
+  .rp-main { margin-left: 0; padding: 20px 16px; }
+  .rp-kpi-strip { grid-template-columns: repeat(2, 1fr); }
+}
+@media print {
+  .rp-navbar, .rp-toc, .rp-hm-controls { display: none !important; }
+  .rp-main { margin-left: 0; padding: 0; }
+  .rp-hm-scroll { max-height: none; overflow: visible; }
+}
+
+/* ==========================================================================
+   UPGRADED TOP UI SYSTEM: 3 Professional Header Paradigms
+   - Paradigm A (header-editorial): Nature/NEJM Smart Scroll-Aware Bar + Hairline Masthead
+   - Paradigm B (header-console): 10x Cell Ranger / Illumina DRAGEN Two-Tier Instrument Console
+   - Paradigm C (header-dossier): CRO Executive Dossier + QC Sign-Off Stamp Card
+   ========================================================================== */
+.rp-scroll-progress {
+  position: fixed;
+  top: 0; left: 0;
+  height: 2px;
+  width: 0%;
+  background: #0D5C75;
+  z-index: 1100;
+  transition: width 0.08s linear;
+}
+body.header-console .rp-scroll-progress {
+  background: #38BDF8;
+}
+
+.rp-navbar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 54px;
+  z-index: 1000;
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--rp-line);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  gap: 12px;
+  transition: background 0.2s, border-color 0.2s, box-shadow 0.2s;
+}
+body.is-scrolled .rp-navbar {
+  box-shadow: 0 2px 10px rgba(15, 23, 42, 0.05);
+}
+
+/* Left brand & TOC trigger */
+.rp-nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+.rp-logo-box {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding-right: 10px;
+  border-right: 1px solid var(--rp-line);
+}
+.rp-logo-mark {
+  width: 24px; height: 24px;
+  background: var(--rp-primary);
+  color: #fff;
+  border-radius: 3px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.rp-logo-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+.rp-logo-name {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.4px;
+  color: var(--rp-ink);
+}
+.rp-logo-sub {
+  font-family: var(--rp-font-mono);
+  font-size: 9.5px;
+  color: var(--rp-ink-dim);
+}
+
+/* Center Dynamic Context Slot (solves Double-Header redundancy!) */
+.rp-nav-center {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  position: relative;
+  height: 36px;
+  overflow: hidden;
+}
+.rp-nav-state-top,
+.rp-nav-state-scroll {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: transform 0.24s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease;
+  position: absolute;
+  left: 0; right: 0;
+}
+.rp-nav-state-top {
+  transform: translateY(0);
+  opacity: 1;
+  font-size: 12px;
+  color: var(--rp-ink-mid);
+}
+.rp-nav-state-scroll {
+  transform: translateY(22px);
+  opacity: 0;
+  pointer-events: none;
+}
+body.is-scrolled .rp-nav-state-top {
+  transform: translateY(-22px);
+  opacity: 0;
+  pointer-events: none;
+}
+body.is-scrolled .rp-nav-state-scroll {
+  transform: translateY(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+.rp-nav-crumb-code {
+  font-family: var(--rp-font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--rp-primary);
+  background: var(--rp-primary-light);
+  padding: 2px 7px;
+  border-radius: 2px;
+}
+.rp-nav-active-sec {
+  font-family: var(--rp-font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  color: #fff;
+  background: var(--rp-primary);
+  padding: 2px 8px;
+  border-radius: 2px;
+}
+.rp-nav-scroll-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--rp-ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Right Segmented Controls & Utility Cluster */
+.rp-nav-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.rp-seg-group {
+  display: inline-flex;
+  background: #F1F5F9;
+  border: 1px solid var(--rp-line);
+  border-radius: 3px;
+  padding: 2px;
+  gap: 2px;
+}
+.rp-seg-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--rp-ink-dim);
+  padding: 3px 6px 3px 8px;
+  display: inline-flex;
+  align-items: center;
+}
+.rp-seg-btn {
+  font-family: inherit;
+  font-size: 11.5px;
+  font-weight: 600;
+  padding: 3px 9px;
+  border: none;
+  background: transparent;
+  color: var(--rp-ink-mid);
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 0.14s;
+  white-space: nowrap;
+}
+.rp-seg-btn:hover {
+  color: var(--rp-ink);
+}
+.rp-seg-btn.active {
+  background: #FFFFFF;
+  color: var(--rp-primary);
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
+}
+
+.rp-util-btn {
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  height: 30px;
+  padding: 0 10px;
+  border-radius: 3px;
+  border: 1px solid var(--rp-line);
+  background: #fff;
+  color: var(--rp-ink-mid);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.rp-util-btn:hover {
+  border-color: var(--rp-primary);
+  color: var(--rp-primary);
+  background: var(--rp-bg-subtle);
+}
+.rp-util-btn.active {
+  background: var(--rp-primary);
+  border-color: var(--rp-primary);
+  color: #fff;
+}
+.rp-util-qc {
+  background: var(--rp-ok-bg);
+  border-color: #B7DFC9;
+  color: var(--rp-ok);
+}
+.rp-util-qc:hover {
+  background: #DCFCE7;
+  border-color: var(--rp-ok);
+  color: var(--rp-ok);
+}
+
+/* --------------------------------------------------------------------------
+   PARADIGM B: Two-Tier Instrument Console Ribbon (10x / DRAGEN Style)
+   -------------------------------------------------------------------------- */
+.rp-console-ribbon {
+  display: none;
+  background: #F8FAFC;
+  border-bottom: 1px solid #CBD5E1;
+  padding: 8px 18px;
+  font-size: 12px;
+  color: var(--rp-ink-mid);
+}
+body.header-console .rp-navbar {
+  background: #0B192C;
+  border-bottom-color: #1E293B;
+}
+body.header-console .rp-logo-name,
+body.header-console .rp-nav-scroll-title,
+body.header-console .rp-nav-state-top {
+  color: #F8FAFC;
+}
+body.header-console .rp-logo-sub {
+  color: #94A3B8;
+}
+body.header-console .rp-logo-box {
+  border-right-color: #1E293B;
+}
+body.header-console .rp-toc-toggle,
+body.header-console .rp-util-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.18);
+  color: #E2E8F0;
+}
+body.header-console .rp-util-btn:hover {
+  background: rgba(255, 255, 255, 0.16);
+  color: #fff;
+}
+body.header-console .rp-util-qc {
+  background: rgba(16, 185, 129, 0.18);
+  border-color: rgba(16, 185, 129, 0.45);
+  color: #6EE7B7;
+}
+body.header-console .rp-seg-group {
+  background: #1E293B;
+  border-color: #334155;
+}
+body.header-console .rp-seg-label { color: #94A3B8; }
+body.header-console .rp-seg-btn { color: #CBD5E1; }
+body.header-console .rp-seg-btn.active {
+  background: #0D5C75;
+  color: #fff;
+}
+body.header-console .rp-console-ribbon {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: -28px -40px 22px -40px;
+  padding: 10px 40px;
+  background: #F1F5F9;
+  border-bottom: 1px solid #CBD5E1;
+}
+body.header-console .rp-cover {
+  display: none;
+}
+
+/* --------------------------------------------------------------------------
+   PARADIGM A & C: Upgraded Masthead Cover Layouts
+   -------------------------------------------------------------------------- */
+.rp-cover {
+  background: #FFFFFF;
+  border-top: 3px solid var(--rp-primary);
+  border-bottom: 1px solid var(--rp-line);
+  padding: 22px 0 18px;
+  margin-bottom: 26px;
+}
+.rp-masthead-grid {
+  display: block;
+}
+body.header-dossier .rp-masthead-grid {
+  display: grid;
+  grid-template-columns: 1fr 330px;
+  gap: 24px;
+  align-items: stretch;
+}
+
+.rp-masthead-toprow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+.rp-type-pill {
+  font-family: var(--rp-font-mono);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.7px;
+  text-transform: uppercase;
+  background: var(--rp-primary-light);
+  color: var(--rp-primary);
+  border: 1px solid #C5E0EA;
+  padding: 2px 8px;
+  border-radius: 2px;
+}
+.rp-id-pill {
+  font-family: var(--rp-font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--rp-ink-mid);
+  background: var(--rp-bg-panel);
+  border: 1px solid var(--rp-line);
+  padding: 2px 8px;
+  border-radius: 2px;
+}
+
+.rp-cover-title {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--rp-ink);
+  margin: 0 0 4px;
+  letter-spacing: -0.3px;
+  line-height: 1.28;
+}
+.rp-cover-sub {
+  font-size: 13.5px;
+  color: var(--rp-ink-dim);
+  margin: 0 0 16px;
+}
+
+/* Hairline Metadata Strip (Replaces boxy 6-cell invoice table) */
+.rp-meta-ribbon {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  border-top: 1px solid var(--rp-line);
+  padding-top: 13px;
+  gap: 0;
+}
+body.header-dossier .rp-meta-ribbon {
+  grid-template-columns: repeat(3, 1fr);
+  row-gap: 12px;
+}
+.rp-meta-item {
+  padding: 0 14px;
+  border-left: 1px solid var(--rp-line);
+}
+.rp-meta-item:first-child {
+  padding-left: 0;
+  border-left: none;
+}
+body.header-dossier .rp-meta-item:nth-child(4) {
+  padding-left: 0;
+  border-left: none;
+}
+.rp-meta-k {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--rp-ink-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  margin-bottom: 3px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.rp-meta-v {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--rp-ink);
+  font-variant-numeric: tabular-nums;
+}
+.rp-meta-v small {
+  font-weight: 500;
+  color: var(--rp-ink-dim);
+  font-size: 11.5px;
+}
+
+/* Paradigm C Only: Right-Side QC Sign-Off Stamp Card */
+.rp-qc-stamp-card {
+  display: none;
+  border: 1px solid #B7DFC9;
+  border-top: 3px solid var(--rp-ok);
+  background: linear-gradient(180deg, #F4FAF7 0%, #FFFFFF 100%);
+  border-radius: 3px;
+  padding: 14px 16px;
+  flex-direction: column;
+  justify-content: space-between;
+}
+body.header-dossier .rp-qc-stamp-card {
+  display: flex;
+}
+.rp-stamp-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px dashed #B7DFC9;
+  padding-bottom: 8px;
+  margin-bottom: 8px;
+}
+.rp-stamp-badge {
+  font-family: var(--rp-font-mono);
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--rp-ok);
+  letter-spacing: 0.5px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.rp-stamp-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.rp-stamp-row {
+  display: grid;
+  grid-template-columns: 92px 1fr 48px;
+  align-items: center;
+  gap: 8px;
+  font-size: 11.5px;
+}
+.rp-stamp-track {
+  height: 6px;
+  background: #E2E8F0;
+  border-radius: 99px;
+  overflow: hidden;
+}
+.rp-stamp-fill {
+  height: 100%;
+  background: var(--rp-ok);
+  border-radius: 99px;
+}
+

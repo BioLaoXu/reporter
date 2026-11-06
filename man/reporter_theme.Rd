@@ -7,7 +7,7 @@
 reporter_theme(
   preset = c("smzy", "jinyu", "blank", "default"),
   primary = NULL,
-  style = c("classic", "v2", "card"),
+  style = c("classic", "v2", "card", "sci", "sci_v1"),
   bslib_preset = "flatly",
   base_font = NULL,
   heading_font = NULL,

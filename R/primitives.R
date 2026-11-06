@@ -202,7 +202,8 @@ sub_head <- function(id, title, description = NULL) {
 #'
 #' @examples
 #' callout("All samples passed the QC threshold.", type = "note")
-callout <- function(..., type = c("note", "tip", "warning", "danger"),
+callout <- function(..., type = c("note", "tip", "warning", "danger",
+                                  "key", "guardrail"),
                     title = NULL) {
   type <- match.arg(type)
   parts <- unlist(list(...))
@@ -569,4 +570,78 @@ rp_icon <- function(name) {
     download = '<svg viewBox="0 0 16 16" class="rp-icon" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 2v8"/><polyline points="4.5 7 8 10.5 11.5 7"/><path d="M2.5 13.5h11"/></svg>'
   )
   HTML(icons[[name]] %||% icons$info)
+}
+
+## ---------------------------------------------------------------------
+## sci_v1 template components (extracted from sp20260727007.html)
+## ---------------------------------------------------------------------
+
+#' Meta grid (sci_v1 cover six-cell block)
+#'
+#' Compact grid of labelled facts for the report cover: renders as a
+#' bordered grid with 1px gaps (grid collapses to 3 columns on narrow
+#' screens via the sci_v1 stylesheet).
+#'
+#' @param ... Named arguments: name = value (value may be HTML).
+#' @return A `htmltools` [tagList()].
+#' @export
+meta_grid <- function(items) {
+  items <- as.list(items)
+  cells <- lapply(names(items), function(nm) {
+    tags$div(class = "rp-meta-cell",
+      tags$div(class = "rp-meta-key", HTML(nm)),
+      tags$div(class = "rp-meta-val", HTML(as.character(items[[nm]])))
+    )
+  })
+  tags$div(class = "rp-meta-grid", tagList(cells))
+}
+
+#' KPI strip (sci_v1 headline metrics)
+#'
+#' 4-column grid of metric cards with a 3px semantic top bar
+#' (`kpi-up`/`kpi-down`/`kpi-ok`), a big tabular number, a label and an
+#' optional sub-caption (e.g. delta explanation). Companion to [kpi()]
+#' (which is the flex-row variant used by other skins).
+#'
+#' @param ... [kpi_strip_item()] objects.
+#' @return A `htmltools` [tagList()].
+#' @export
+kpi_strip <- function(...) {
+  tags$div(class = "rp-kpi-strip", tagList(list(...)))
+}
+
+#' Single sci_v1 KPI card
+#'
+#' @param value character(1). Headline number (HTML allowed).
+#' @param label character(1). Metric name.
+#' @param sub character(1). Optional sub-caption under the number.
+#' @param status character(1). Top-bar semantics: `ok`, `up`, `down` or
+#'   `none`.
+#' @return A `htmltools` [tagList()].
+#' @export
+kpi_strip_item <- function(value, label, sub = NULL,
+                           status = c("none", "ok", "up", "down")) {
+  status <- match.arg(status)
+  cls <- if (status == "none") "rp-kpi-card" else
+    paste("rp-kpi-card", paste0("kpi-", status))
+  tags$div(class = cls,
+    tags$div(class = "rp-kpi-num", HTML(as.character(value))),
+    tags$div(class = "rp-kpi-label", HTML(as.character(label))),
+    if (!is.null(sub)) tags$div(class = "rp-kpi-sub", HTML(as.character(sub)))
+  )
+}
+
+#' QC status pill (sci_v1 navbar)
+#'
+#' @param text character(1). Pill text, e.g. `"16/16 PASS"`.
+#' @param status character(1). `ok` (green), `warn` (amber) or `bad`
+#'   (red).
+#' @return A `htmltools` [tagList()].
+#' @export
+qc_pill <- function(text, status = c("ok", "warn", "bad")) {
+  status <- match.arg(status)
+  tags$span(class = paste("rp-qc-pill", paste0("rp-qc-pill-", status)),
+    tags$span(class = "rp-qc-dot"),
+    HTML(as.character(text))
+  )
 }

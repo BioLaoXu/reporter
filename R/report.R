@@ -405,10 +405,19 @@ render_report <- function(report, output = "report.html",
 
   module_links <- lapply(rendered, function(r) list(id = r$id, title = r$title))
   navbar <- rp_navbar(title, ctx$meta, theme$brand, module_links)
-  toc <- rp_toc(toc_groups)
-  content <- tagList(lapply(rendered, function(r) {
-    rp_module_section(r$id, r$title, r$content)
-  }))
+  toc <- rp_toc(toc_groups,
+    header = "报告目录 · CONTENTS",
+    counter = paste0(sprintf("%02d", 1L), " / ",
+      sprintf("%02d", length(rendered))))
+  cover <- if (identical(theme$style, "sci_v1")) {
+    rp_cover(title, ctx$meta, theme$brand, style = theme$style)
+  } else NULL
+  content <- tagList(
+    if (!is.null(cover)) cover,
+    lapply(rendered, function(r) {
+      rp_module_section(r$id, r$title, r$content)
+    })
+  )
   footer <- rp_footer(ctx$meta, theme$brand, theme, length(errors))
   page <- rp_page(title, navbar, toc, content, footer, theme, schema_json = schema_json)
 

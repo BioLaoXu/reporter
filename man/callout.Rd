@@ -4,7 +4,11 @@
 \alias{callout}
 \title{Callout box}
 \usage{
-callout(..., type = c("note", "tip", "warning", "danger"), title = NULL)
+callout(
+  ...,
+  type = c("note", "tip", "warning", "danger", "key", "guardrail"),
+  title = NULL
+)
 }
 \arguments{
 \item{type}{character(1). One of \code{note}, \code{tip}, \code{warning}, \code{danger}.}

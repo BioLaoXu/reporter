@@ -62,7 +62,7 @@
 #' reporter_theme(style = "v2")
 reporter_theme <- function(preset = c("smzy", "jinyu", "blank", "default"),
                            primary = NULL,
-                           style = c("classic", "v2", "card", "sci"),
+                           style = c("classic", "v2", "card", "sci", "sci_v1"),
                            bslib_preset = "flatly",
                            base_font = NULL,
                            heading_font = NULL,

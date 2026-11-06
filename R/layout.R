@@ -29,6 +29,18 @@ rp_dependency <- function() {
   )
 }
 
+#' sci_v1 template assets (loaded only for style = "sci_v1")
+#' @noRd
+sci_v1_dependency <- function() {
+  htmltools::htmlDependency(
+    name = "reporter-sci_v1",
+    version = utils::packageVersion("reporter"),
+    src = system.file("assets", package = "reporter"),
+    stylesheet = "reporter-sci_v1.css",
+    all_files = FALSE
+  )
+}
+
 #' Assemble the full HTML page
 #'
 #' @param title character(1). Page `<title>`.
@@ -58,7 +70,9 @@ rp_page <- function(title, navbar, toc, content, footer, theme,
       if (!is.null(schema_json) && nzchar(schema_json)) {
         tags$script(HTML(schema_json),
           id = "rp-schema", type = "application/json", class = "rp-schema")
-      }
+      },
+      ## sci_v1 standalone template (loaded only for that style)
+      if (identical(theme$style, "sci_v1")) sci_v1_dependency()
     ),
     tags$body(
       class = paste(c("rp-body",
@@ -163,8 +177,17 @@ rp_navbar <- function(title, meta, brand, module_links) {
 #'   `title` and `sections` (a list of `list(id, title)` entries).
 #' @return A [htmltools::tagList()].
 #' @noRd
-rp_toc <- function(toc_groups) {
+rp_toc <- function(toc_groups, header = NULL, counter = NULL) {
   tagList(
+    if (!is.null(header)) {
+      tags$div(
+        class = "rp-toc-header",
+        tags$span(class = "rp-toc-header-title", HTML(header)),
+        if (!is.null(counter)) {
+          tags$span(class = "rp-toc-header-count", HTML(counter))
+        }
+      )
+    },
     lapply(toc_groups, function(g) {
       tags$ul(
         class = "rp-toc-group",
@@ -198,11 +221,20 @@ rp_toc <- function(toc_groups) {
 #' @param brand Brand info from the theme.
 #' @return A [htmltools::tagList()].
 #' @noRd
-rp_cover <- function(title, meta, brand) {
+rp_cover <- function(title, meta, brand, style = "classic") {
+  ## sci_v1 template: eyebrow badges + meta grid replace the kv table
+  sci_v1 <- identical(style, "sci_v1")
+  eyebrow <- if (sci_v1) {
+    eb <- list("ANALYSIS REPORT",
+      if (!is.null(meta$code) && nzchar(meta$code))
+        paste0("PROJECT ID · ", meta$code) else NULL,
+      paste0("DELIVERY DATE · ", meta$date))
+    eb[!vapply(eb, is.null, logical(1L))]
+  } else list()
   kv <- list()
   add_kv <- function(label, value) {
     if (!is.null(value) && !is.na(value) && nzchar(as.character(value))) {
-      kv[[length(kv) + 1L]] <<- stats::setNames(as.character(value), label)
+      kv <<- c(kv, stats::setNames(list(as.character(value)), label))
     }
   }
   add_kv("Project", meta$project)
@@ -226,12 +258,20 @@ rp_cover <- function(title, meta, brand) {
         if (!is.null(logo_uri)) {
           tags$img(class = "rp-cover-logo", src = logo_uri, alt = "logo")
         },
+        if (length(eyebrow)) {
+          tags$div(class = "rp-cover-eyebrow",
+            lapply(eyebrow, function(b)
+              tags$span(class = "rp-cover-eyebrow-item", b))
+          )
+        },
         tags$h1(class = "rp-cover-title", HTML(title)),
         tags$p(
           class = "rp-cover-subtitle",
           if (nzchar(brand$company %||% "")) HTML(brand$company) else NULL
         ),
-        if (length(kv) > 0L) {
+        if (sci_v1 && length(kv) > 0L) {
+          meta_grid(as.list(kv))
+        } else if (length(kv) > 0L) {
           tags$div(class = "rp-cover-kv", kv_table(unlist(kv)))
         }
       )

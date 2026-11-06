@@ -70,6 +70,12 @@ render_report(build(new_ctx()), print_html = TRUE,
   theme = reporter_theme(preset = "blank", style = "sci"),
   title = "ChIP-seq Analysis Report")
 
+## 1e) sci_v1 standalone template (extracted from sp20260727007.html)
+render_report(build(new_ctx()),
+  output = file.path(out_dir, "chip_demo_sci_v1.html"),
+  theme = reporter_theme(preset = "blank", style = "sci_v1"),
+  title = "ChIP-seq Analysis Report", print_html = TRUE)
+
 ## 2) smzy brand skin
 render_report(build(new_ctx()), print_html = TRUE,
   output = file.path(out_dir, "chip_demo_smzy.html"),

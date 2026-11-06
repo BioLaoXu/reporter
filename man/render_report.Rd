@@ -14,7 +14,8 @@ render_report(
   quiet = FALSE,
   json_sidecar = FALSE,
   engine = NULL,
-  print_mode = FALSE
+  print_mode = FALSE,
+  print_html = FALSE
 )
 }
 \arguments{
