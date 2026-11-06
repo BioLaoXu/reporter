@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "reporter R Package Architecture",
+    "subtitle": "modular HTML report framework — pure R, zero external runtimes",
+    "output": "reporter-architecture.html",
+    "viewBox": [1120, 700]
+  },
+  "components": [
+    { "id": "pipeline", "type": "external", "label": "Analysis Pipeline", "sublabel": "Rscript run_report.R", "pos": [40, 210], "size": [140, 60] },
+    { "id": "legacy", "type": "external", "label": "Legacy Rmd Reports", "sublabel": "m6A / ChIP Report.R", "pos": [40, 380], "size": [140, 60] },
+
+    { "id": "cli", "type": "backend", "label": "CLI Entry", "sublabel": "optparse · report_cli()", "pos": [300, 210], "size": [140, 60] },
+    { "id": "api", "type": "backend", "label": "Report API", "sublabel": "create_report · add_module", "pos": [500, 210], "size": [150, 60] },
+    { "id": "ctx", "type": "database", "label": "Report Context", "sublabel": "meta · counters · TOC registry", "pos": [300, 340], "size": [150, 60] },
+    { "id": "modules", "type": "frontend", "label": "Modules", "sublabel": "function(ctx) -> tagList", "pos": [500, 340], "size": [150, 60] },
+    { "id": "primitives", "type": "frontend", "label": "Content Primitives", "sublabel": "figure · table · gallery · callout", "pos": [500, 470], "size": [150, 60] },
+
+    { "id": "theme", "type": "cloud", "label": "Theme Engine", "sublabel": "bslib bs_theme · --rp-* vars", "pos": [700, 80], "size": [150, 60] },
+    { "id": "layout", "type": "backend", "label": "Page Skeleton", "sublabel": "navbar · sidebar TOC · footer", "pos": [700, 210], "size": [150, 60] },
+    { "id": "assets", "type": "cloud", "label": "Bundled Assets", "sublabel": "reporter.css/js · logos · xlsx", "pos": [700, 340], "size": [150, 60] },
+    { "id": "inline", "type": "backend", "label": "Inline Engine", "sublabel": "base64 images · css/js fold-in", "pos": [890, 210], "size": [150, 60] },
+
+    { "id": "html", "type": "external", "label": "Single-file HTML", "sublabel": "self-contained deliverable", "pos": [890, 340], "size": [150, 60], "tag": "email-ready" }
+  ],
+  "boundaries": [
+    { "kind": "region", "label": "reporter R package (pure R, no Quarto / no Node)", "wraps": ["cli", "api", "ctx", "modules", "primitives", "theme", "layout", "assets", "inline"] }
+  ],
+  "connections": [
+    { "from": "pipeline", "to": "cli", "label": "CLI args", "variant": "emphasis" },
+    { "from": "legacy", "to": "modules", "label": "migrate section by section", "variant": "dashed", "fromSide": "right", "toSide": "left", "via": [[240, 410], [240, 370]], "labelAt": [232, 452] },
+    { "from": "cli", "to": "api", "variant": "emphasis" },
+    { "from": "api", "to": "ctx", "label": "create ctx", "fromSide": "bottom", "toSide": "top", "route": "straight", "labelAt": [375, 302] },
+    { "from": "ctx", "to": "modules", "label": "ctx methods", "fromSide": "right", "toSide": "left", "route": "straight", "labelAt": [525, 322] },
+    { "from": "modules", "to": "primitives", "label": "compose", "fromSide": "bottom", "toSide": "top", "route": "straight", "labelAt": [575, 435] },
+    { "from": "api", "to": "layout", "label": "render_report()", "fromSide": "top", "toSide": "left", "via": [[575, 160], [640, 160], [640, 240]], "labelAt": [590, 148] },
+    { "from": "theme", "to": "layout", "label": "compiled deps", "fromSide": "bottom", "toSide": "top", "route": "straight", "labelAt": [880, 175] },
+    { "from": "assets", "to": "layout", "label": "htmlDependency", "variant": "dashed", "fromSide": "top", "toSide": "bottom", "route": "straight" },
+    { "from": "layout", "to": "inline", "label": "HTML + libdir", "variant": "emphasis", "labelAt": [870, 292] },
+    { "from": "inline", "to": "html", "label": "verify: no external refs", "variant": "emphasis", "fromSide": "bottom", "toSide": "top", "route": "straight", "labelAt": [965, 305] }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "Pure Function Composition",
+      "items": [
+        "Modules are plain R functions: ctx in, htmltools tagList out",
+        "Figure/table numbering lives in the context, not in globals",
+        "Missing result directories gate modules declaratively"
+      ]
+    },
+    {
+      "dot": "orange",
+      "title": "Self-contained Output",
+      "items": [
+        "Images are base64 encoded at figure creation time",
+        "inline_html folds every css/js dependency into one file",
+        "A failed module degrades to an in-report error placeholder"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Zero External Runtimes",
+      "items": [
+        "No Quarto CLI, no Node, no pandoc required at render time",
+        "Theme = bslib Bootstrap 5 + --rp-* CSS variables",
+        "Scroll-sync TOC ships as vanilla IntersectionObserver JS"
+      ]
+    }
+  ]
+}

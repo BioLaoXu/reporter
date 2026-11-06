@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "diagram_type": "dataflow",
+  "meta": {
+    "title": "reporter Rendering Dataflow",
+    "subtitle": "result directory to self-contained HTML report",
+    "output": "reporter-dataflow.html",
+    "viewBox": [1180, 720]
+  },
+  "stages": [
+    { "label": "Result Directory" },
+    { "label": "Discovery" },
+    { "label": "Modules" },
+    { "label": "Assembly" },
+    { "label": "Delivery" }
+  ],
+  "nodes": [
+    { "id": "sampleinfo", "type": "database", "label": "0.SampleInfo", "stage": 0, "row": 0, "sublabel": "groups · compares" },
+    { "id": "qc", "type": "database", "label": "QC/Mapping", "stage": 0, "row": 1, "sublabel": "1.QC · 2.Mapping tables" },
+    { "id": "plots", "type": "database", "label": "Peak/QC figs", "stage": 0, "row": 2, "sublabel": "3.Quality · 4.PeakCalling png" },
+    { "id": "diff", "type": "database", "label": "Diff/Enrich", "stage": 0, "row": 3, "sublabel": "5.DiffPeaks · 6.Similarity" },
+
+    { "id": "find", "type": "backend", "label": "auto_find", "stage": 1, "row": 1, "sublabel": "pattern scan" },
+    { "id": "read", "type": "backend", "label": "read_result_table", "stage": 1, "row": 2, "sublabel": "csv/tsv/xlsx" },
+
+    { "id": "modfn", "type": "frontend", "label": "module render(ctx)", "stage": 2, "row": 1, "sublabel": "chip module set" },
+    { "id": "counters", "type": "database", "label": "Counters", "stage": 2, "row": 2, "sublabel": "fig/table numbers in ctx" },
+
+    { "id": "assembly", "type": "backend", "label": "Page Assembly", "stage": 3, "row": 1, "sublabel": "navbar · TOC · cards" },
+    { "id": "theme", "type": "cloud", "label": "reporter_theme", "stage": 3, "row": 0, "sublabel": "brand presets" },
+    { "id": "errblock", "type": "security", "label": "Error Placeholder", "stage": 3, "row": 3, "sublabel": "tryCatch per module" },
+
+    { "id": "inl", "type": "backend", "label": "inline_html", "stage": 4, "row": 1, "sublabel": "base64 · css/js" },
+    { "id": "report", "type": "external", "label": "report.html", "stage": 4, "row": 2, "sublabel": "single file" }
+  ],
+  "flows": [
+    { "from": "sampleinfo", "to": "find", "label": "GroupInfo.txt", "classification": "project metadata", "variant": "emphasis" },
+    { "from": "qc", "to": "read", "label": "qc tables", "classification": "non-PII", "variant": "emphasis", "labelAt": [200, 352] },
+    { "from": "plots", "to": "find", "label": "figure paths", "classification": "non-PII", "variant": "default", "labelAt": [248, 326] },
+    { "from": "diff", "to": "read", "label": "diff/enrich csv", "classification": "non-PII", "variant": "default" },
+    { "from": "find", "to": "modfn", "label": "named file lists", "classification": "non-PII", "variant": "emphasis" },
+    { "from": "read", "to": "modfn", "label": "data frames", "classification": "non-PII", "variant": "default" },
+    { "from": "modfn", "to": "counters", "label": "numbering", "classification": "internal", "variant": "dashed", "fromSide": "bottom", "toSide": "top", "route": "straight", "labelAt": [672, 328] },
+    { "from": "modfn", "to": "assembly", "label": "tagList content", "classification": "rendered html", "variant": "emphasis" },
+    { "from": "theme", "to": "assembly", "label": "css vars", "classification": "non-PII", "variant": "default", "fromSide": "bottom", "toSide": "top", "route": "straight", "labelAt": [905, 214] },
+    { "from": "modfn", "to": "errblock", "label": "on failure", "classification": "never aborts report", "variant": "security", "fromSide": "bottom", "toSide": "left", "via": [[600, 480], [620, 480]], "labelAt": [596, 520] },
+    { "from": "assembly", "to": "inl", "label": "HTML + libdir", "classification": "unwrapped refs", "variant": "emphasis" },
+    { "from": "inl", "to": "report", "label": "verified single file", "classification": "no external refs", "variant": "emphasis", "fromSide": "bottom", "toSide": "top", "route": "straight", "labelAt": [1016, 328] }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "Hot Path",
+      "items": [
+        "Result files are discovered, read and composed left to right",
+        "Every flow label names a concrete data asset",
+        "Counters and TOC registry live inside the context object"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Failure Isolation",
+      "items": [
+        "Each module renders inside its own tryCatch",
+        "Failures become visible error placeholders, never silent",
+        "The report always completes when at least one module renders"
+      ]
+    },
+    {
+      "dot": "orange",
+      "title": "Self-containment Gate",
+      "items": [
+        "inline_html folds scripts, styles and fonts into one file",
+        "Final verification warns on any remaining lib/ reference",
+        "Output opens offline and can be sent as an email attachment"
+      ]
+    }
+  ]
+}

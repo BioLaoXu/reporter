@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "reporter Technical Roadmap",
+    "subtitle": "phased evolution of the modular HTML report framework",
+    "output": "reporter-roadmap.html"
+  },
+  "lanes": [
+    { "id": "p0", "label": "Phase 0 · Research & Selection (done)" },
+    { "id": "p1", "label": "Phase 1 · Framework + ChIP Pilot (done, v0.1.0)" },
+    { "id": "p2", "label": "Phase 2 · m6A Migration" },
+    { "id": "p3", "label": "Phase 3 · Pipeline Rollout" },
+    { "id": "p4", "label": "Phase 4 · Enhancements" }
+  ],
+  "nodes": [
+    { "id": "survey", "lane": "p0", "col": 0, "type": "backend", "label": "Tech Survey", "sublabel": "Rmd · Quarto · rst-engine · pure R", "tag": "done" },
+    { "id": "decision", "lane": "p0", "col": 3, "type": "security", "label": "Pure R chosen", "sublabel": "no Quarto CLI / no Node", "tag": "done" },
+
+    { "id": "framework", "lane": "p1", "col": 0, "type": "backend", "label": "Core Framework", "sublabel": "ctx · modules · theme · numbering", "tag": "done" },
+    { "id": "chip", "lane": "p1", "col": 2, "type": "frontend", "label": "ChIP Modules", "sublabel": "11 modules, dir-gated", "tag": "done" },
+    { "id": "inline", "lane": "p1", "col": 4, "type": "backend", "label": "Inline Engine", "sublabel": "base64 + css/js fold-in", "tag": "done" },
+    { "id": "tests", "lane": "p1", "col": 5, "type": "database", "label": "73 tests + UI", "sublabel": "e2e · playwright · 0 errors", "tag": "done" },
+
+    { "id": "m6a", "lane": "p2", "col": 0, "type": "frontend", "label": "m6A Modules", "sublabel": "1173-line Rmd, split by section" },
+    { "id": "gating", "lane": "p2", "col": 3, "type": "backend", "label": "Variant Fusion", "sublabel": "9 Rmd copies -> required_dirs + when" },
+
+    { "id": "rna", "lane": "p3", "col": 0, "type": "frontend", "label": "RNA Modules", "sublabel": "reuse shared QC/enrich" },
+    { "id": "cuttag", "lane": "p3", "col": 2, "type": "frontend", "label": "Cut&Tag", "sublabel": "new diff modules only" },
+    { "id": "retire", "lane": "p3", "col": 5, "type": "database", "label": "Legacy Retired", "sublabel": "utils variants merged" },
+
+    { "id": "dark", "lane": "p4", "col": 0, "type": "frontend", "label": "Dark Theme", "sublabel": "--rp-* vars ready" },
+    { "id": "big", "lane": "p4", "col": 2, "type": "backend", "label": "Big Reports", "sublabel": "standalone=FALSE + lazy load" },
+    { "id": "schema", "lane": "p4", "col": 4, "type": "database", "label": "Schema Config", "sublabel": "result layout discovery" },
+    { "id": "git", "lane": "p4", "col": 5, "type": "cloud", "label": "Git Repo", "sublabel": "code+docs, no data" }
+  ],
+  "edges": [
+    { "from": "survey", "to": "decision" },
+    { "from": "decision", "to": "framework", "route": "drop", "fromSide": "bottom", "toSide": "top" },
+    { "from": "framework", "to": "chip" },
+    { "from": "chip", "to": "inline" },
+    { "from": "inline", "to": "tests" },
+    { "from": "tests", "to": "m6a", "route": "drop", "fromSide": "bottom", "toSide": "top" },
+    { "from": "m6a", "to": "gating" },
+    { "from": "gating", "to": "rna", "route": "drop", "fromSide": "bottom", "toSide": "top" },
+    { "from": "rna", "to": "cuttag" },
+    { "from": "cuttag", "to": "retire" },
+    { "from": "retire", "to": "dark", "route": "drop", "fromSide": "bottom", "toSide": "top" },
+    { "from": "dark", "to": "big" },
+    { "from": "big", "to": "schema" },
+    { "from": "schema", "to": "git" }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "Shipped in Phase 1",
+      "items": [
+        "Pure R engine: 47 exported functions, zero external runtimes",
+        "73 testthat assertions green, playwright UI check with 0 console errors",
+        "Three self-contained sample reports (blank / smzy / one-group)"
+      ]
+    },
+    {
+      "dot": "orange",
+      "title": "Next Up: Phase 2",
+      "items": [
+        "Split the 1173-line m6A.Rmd into modules, one section at a time",
+        "Collapse 9 copied Rmd variants into required_dirs + when gating",
+        "Acceptance: all 5 business variants from one template"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Standing Principles",
+      "items": [
+        "Modules are plain functions: ctx in, tagList out, no globals",
+        "Delivered figures in English, report prose in Chinese",
+        "A failed module degrades visibly, the report never aborts"
+      ]
+    }
+  ]
+}

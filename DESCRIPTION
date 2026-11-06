@@ -1,0 +1,41 @@
+Package: reporter
+Type: Package
+Title: Modular Automated HTML Reporting for Bioinformatics Pipelines
+Version: 0.1.0
+Authors@R: c(
+    person("xu", "fa", , "BioLaoXu@users.noreply.github.com", role = c("aut", "cre")),
+    person("Origene", "BioInfoTeam", , "BioLaoXu@users.noreply.github.com", role = "aut")
+  )
+Description: A modular, automated reporting framework for standard
+    bioinformatics analysis results. A report is assembled from plain R
+    functions (modules) that consume a report context (result directory,
+    project metadata, auto figure/table numbering) and return
+    'htmltools' tag fragments. Rendering produces a single
+    self-contained HTML file (CSS/JS inlined, images base64 encoded)
+    with a fixed top navbar, a sidebar table of contents with
+    scroll-synced highlighting, and switchable brand themes.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+Depends:
+    R (>= 4.1.0)
+Imports:
+    bslib,
+    data.table,
+    htmltools,
+    OXM,
+    openxlsx,
+    optparse,
+    readxl,
+    reactable,
+    rlang,
+    xfun,
+    yaml
+Suggests:
+    knitr,
+    plotly,
+    tippy,
+    rmarkdown,
+    testthat (>= 3.0.0)
+VignetteBuilder: knitr
+Config/roxygen2/version: 8.1.1

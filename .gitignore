@@ -1,0 +1,32 @@
+# 私有包库（不入库）
+library/
+
+# R 会话产物
+.Rhistory
+.RData
+.Rproj.user/
+*.Rproj
+.Renviron
+
+# 构建产物
+*.tar.gz
+*.zip
+dist/
+
+# 临时文件
+*~
+.DS_Store
+.nodeenv/
+
+# 生成的示例报告（含真实项目数据，不入库）
+examples/
+
+# 临时预览图
+docs/*.preview.png
+
+# R 会话绘图残留
+Rplots.pdf
+*.log
+
+# IDE 工具产物
+.codebuddy/
