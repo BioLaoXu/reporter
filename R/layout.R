@@ -360,3 +360,104 @@ rp_footer <- function(meta, brand, theme, n_errors = 0L) {
     )
   )
 }
+
+## ---------------------------------------------------------------------
+## sci_v1 shell (extracted from sp20260727007.html — DOM 1:1)
+## ---------------------------------------------------------------------
+
+#' @noRd
+rp_navbar_sci_v1 <- function(title, meta, brand, qc_text = NULL) {
+  svg_toggle <- tags$svg(width = "15", height = "15", viewBox = "0 0 16 16",
+    fill = "none", stroke = "currentColor", `stroke-width` = "1.6",
+    tags$path(d = "M2.5 4h11M2.5 8h7.5M2.5 12h11"))
+  svg_mark <- tags$svg(width = "14", height = "14", viewBox = "0 0 16 16",
+    fill = "none", stroke = "currentColor", `stroke-width` = "1.7",
+    tags$path(d = "M3 2.5c3.5 0 6.5 11 10 11M13 2.5c-3.5 0-6.5 11-10 11M4.5 5h7M4.5 11h7"))
+  crumb <- tags$div(class = "rp-nav-state-top",
+    if (!is.null(meta$code) && nzchar(meta$code %||% "")) {
+      tags$span(class = "rp-nav-crumb-code", meta$code)
+    },
+    tags$span(meta$title %||% title),
+    tags$span(style = "color:var(--rp-line);", "|"),
+    if (!is.null(meta$species)) tags$span(meta$species)
+  )
+  tagList(
+    tags$header(class = "rp-navbar",
+      tags$div(class = "rp-nav-brand",
+        tags$button(class = "rp-toc-toggle", id = "btn-toc-toggle",
+          title = "折叠/展开左侧章节导航 (快捷键 [ )", type = "button",
+          svg_toggle),
+        tags$div(class = "rp-logo-box",
+          tags$span(class = "rp-logo-mark", svg_mark),
+          tags$div(class = "rp-logo-text",
+            tags$span(class = "rp-logo-name", "NGS-REPORTER"),
+            tags$span(class = "rp-logo-sub", "BIOINFO DELIVERY v2.0")
+          )
+        )
+      ),
+      tags$div(class = "rp-nav-center", crumb),
+      tags$div(class = "rp-nav-right",
+        tags$div(class = "rp-seg-group", title = "顶部 UI 范式",
+          tags$span(class = "rp-seg-label", "顶部范式:"),
+          tags$button(class = "rp-seg-btn active", type = "button", "A 期刊感知型"),
+          tags$button(class = "rp-seg-btn", type = "button", "B 仪器控制台"),
+          tags$button(class = "rp-seg-btn", type = "button", "C 结题签发卡")
+        ),
+        if (!is.null(qc_text) && nzchar(qc_text)) {
+          tags$button(class = "rp-util-btn rp-util-qc", type = "button",
+            title = "质控基线",
+            tags$span(class = "rp-qc-dot"),
+            tags$span(qc_text)
+          )
+        },
+        tags$button(class = "rp-util-btn", type = "button", title = "分组语义映射",
+          tags$span("分组映射")),
+        tags$button(class = "rp-util-btn", type = "button", title = "AI 解读",
+          tags$span("AI 解读")),
+        tags$button(class = "rp-util-btn", type = "button", title = "卡片风",
+          tags$span("卡片风")),
+        tags$button(class = "rp-util-btn", type = "button",
+          title = "打开浏览器打印对话框，另存为 PDF",
+          onclick = "exportReportToPDF()",
+          "导出 PDF")
+      )
+    )
+  )
+}
+
+#' @noRd
+rp_toc_sci_v1 <- function(toc_groups) {
+  n <- length(toc_groups)
+  items <- lapply(seq_along(toc_groups), function(i) {
+    g <- toc_groups[[i]]
+    tags$li(class = "rp-toc-item",
+      tags$a(class = "rp-toc-link", href = paste0("#", g$id),
+        sprintf("%02d · %s", i, g$title)),
+      if (length(g$sections)) {
+        tags$ul(class = "rp-toc-sublist",
+          lapply(g$sections, function(s) {
+            tags$li(tags$a(class = "rp-toc-sublink", href = paste0("#", s$id),
+              HTML(s$title)))
+          }))
+      }
+    )
+  })
+  tags$nav(class = "rp-toc", id = "rp-toc", `aria-label` = "报告章节导航",
+    tags$div(class = "rp-toc-header",
+      tags$span("报告目录 · CONTENTS"),
+      tags$span(id = "toc-progress", sprintf("%02d / %02d", 1L, n))
+    ),
+    tags$ul(class = "rp-toc-list", items)
+  )
+}
+
+#' @noRd
+rp_module_section_sci_v1 <- function(id, title, number, content) {
+  tags$section(class = "rp-module", id = id,
+    tags$div(class = "rp-module-header",
+      tags$span(class = "rp-module-num", sprintf("%02d", number)),
+      tags$h2(class = "rp-module-title", HTML(title))
+    ),
+    tags$div(class = "rp-module-body", content)
+  )
+}

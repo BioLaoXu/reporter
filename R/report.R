@@ -212,6 +212,7 @@ render_report <- function(report, output = "report.html",
                           theme = NULL, standalone = TRUE,
                           title = NULL, only = NULL, quiet = FALSE, json_sidecar = FALSE,
                           engine = NULL, print_mode = FALSE,
+                          qc_pill = NULL,
                           print_html = FALSE) {
   if (!inherits(report, "reporter_report")) {
     stop("`report` must be created by reporter::create_report()", call. = FALSE)
@@ -264,6 +265,9 @@ render_report <- function(report, output = "report.html",
   if (!inherits(theme, "reporter_theme")) {
     stop("`theme` must be created by reporter::reporter_theme()", call. = FALSE)
   }
+  ## sci_v1 standalone template shell (navbar/toc/cover/module wrappers)
+  use_sci_v1 <- identical(theme$style, "sci_v1")
+
   ## context caption language wins when explicitly set at theme level too
   if (!identical(ctx$meta$caption_lang, theme$caption_lang)) {
     ctx$meta$caption_lang <- theme$caption_lang
@@ -404,20 +408,39 @@ render_report <- function(report, output = "report.html",
   })
 
   module_links <- lapply(rendered, function(r) list(id = r$id, title = r$title))
-  navbar <- rp_navbar(title, ctx$meta, theme$brand, module_links)
-  toc <- rp_toc(toc_groups,
-    header = "报告目录 · CONTENTS",
-    counter = paste0(sprintf("%02d", 1L), " / ",
-      sprintf("%02d", length(rendered))))
-  cover <- if (identical(theme$style, "sci_v1")) {
-    rp_cover(title, ctx$meta, theme$brand, style = theme$style)
-  } else NULL
-  content <- tagList(
-    if (!is.null(cover)) cover,
-    lapply(rendered, function(r) {
-      rp_module_section(r$id, r$title, r$content)
-    })
-  )
+  navbar <- if (use_sci_v1) {
+    rp_navbar_sci_v1(title, ctx$meta, theme$brand, qc_text = qc_pill)
+  } else {
+    rp_navbar(title, ctx$meta, theme$brand, module_links)
+  }
+  toc <- if (use_sci_v1) {
+    rp_toc_sci_v1(toc_groups)
+  } else {
+    rp_toc(toc_groups,
+      header = "报告目录 · CONTENTS",
+      counter = paste0(sprintf("%02d", 1L), " / ",
+        sprintf("%02d", length(rendered))))
+  }
+  content <- if (use_sci_v1) {
+    tagList(
+      tags$main(class = "rp-main",
+        tags$div(class = "rp-container",
+          rp_cover(title, ctx$meta, theme$brand, style = "sci_v1"),
+          lapply(seq_along(rendered), function(i) {
+            rp_module_section_sci_v1(rendered[[i]]$id,
+              rendered[[i]]$title, i, rendered[[i]]$content)
+          })
+        )
+      )
+    )
+  } else {
+    cover <- if (identical(theme$style, "sci_v1")) NULL else NULL
+    tagList(
+      lapply(rendered, function(r) {
+        rp_module_section(r$id, r$title, r$content)
+      })
+    )
+  }
   footer <- rp_footer(ctx$meta, theme$brand, theme, length(errors))
   page <- rp_page(title, navbar, toc, content, footer, theme, schema_json = schema_json)
 
