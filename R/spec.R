@@ -191,7 +191,9 @@ spec_layer_module <- function(layer, sp) {
           ctx$data_table(main, title = rp_char1(fld$title) %||% f,
             truncate = names(main),
             explain = !is.null(rp_char1(fld$explain)),
-            explain_sheet = rp_char1(fld$explain))
+            explain_sheet = rp_char1(fld$explain),
+            source = c(f_path, if (!is.null(rp_char1(fld$join)))
+              file.path(ctx$meta$result_path, rel_dir %||% "", fld$join)))
         }
       } else if (identical(what, "figure")) {
         fig_dir <- rp_char1(fld$dir)
@@ -327,7 +329,7 @@ render_spec <- function(spec, result_path = NULL, output = "report.html",
     spec_text <- paste(unlist(sp$layers), collapse = " ")
     markers <- regmatches(spec_text,
       gregexpr("\\[@[^\\]]+\\]", spec_text, perl = TRUE))[[1L]]
-    if (!identical(as.integer(markers[1L]), -1L)) {
+    if (length(markers) > 0L) {
       keys <- trimws(unlist(strsplit(gsub("\\[@|\\]", "", markers),
         "[;,；，]")))
       keys <- sub("^@", "", keys)

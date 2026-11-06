@@ -33,7 +33,8 @@
 #' )
 figure_block <- function(src, number = NULL, title = NULL, caption = NULL,
                          description = NULL, width = NULL, id = NULL,
-                         download_name = NULL, missing_ok = TRUE) {
+                         download_name = NULL, missing_ok = TRUE,
+                         data_attrs = NULL) {
   stopifnot(is.null(number) || (is.numeric(number) && length(number) == 1L))
   src <- rp_char1(src)
   if (is.null(caption) && !is.null(number)) {
@@ -75,17 +76,20 @@ figure_block <- function(src, number = NULL, title = NULL, caption = NULL,
     onerror = "this.classList.add('rp-img-broken')"
   )
 
-  tagList(
-    tags$figure(
-      class = "rp-fig",
-      id = id,
-      img_tag,
-      caption_row,
-      if (!is.null(description)) {
-        tags$p(class = "rp-fig-desc", HTML(description))
-      }
-    )
+  fig <- tags$figure(
+    class = "rp-fig",
+    id = id,
+    img_tag,
+    caption_row,
+    if (!is.null(description)) {
+      tags$p(class = "rp-fig-desc", HTML(description))
+    }
   )
+  ## machine-readable anchors (data-rp-*) for the embedded report schema
+  if (length(data_attrs)) {
+    fig <- do.call(htmltools::tagAppendAttributes, c(list(fig), data_attrs))
+  }
+  tagList(fig)
 }
 
 #' Table block
@@ -106,7 +110,8 @@ figure_block <- function(src, number = NULL, title = NULL, caption = NULL,
 #' @seealso [data_table()], [report_context()]
 #' @export
 table_block <- function(data, number = NULL, title = NULL, caption = NULL,
-                        description = NULL, ...) {
+                        description = NULL, dom_id = NULL,
+                        data_attrs = NULL, ...) {
   if (is.null(caption) && !is.null(number)) {
     caption <- paste("Table", number)
   }
@@ -132,24 +137,28 @@ table_block <- function(data, number = NULL, title = NULL, caption = NULL,
   } else {
     widget <- data
   }
-  tagList(
-    tags$div(
-      class = "rp-tbl",
-      if (!is.null(caption) || !is.null(title) || !is.null(number)) {
-        tags$div(
-          class = "rp-tbl-caption",
-          if (!is.null(caption)) {
-            tags$span(class = "rp-badge rp-badge-tbl", caption)
-          },
-          if (!is.null(title)) tags$span(class = "rp-tbl-title", HTML(title))
-        )
-      },
-      widget,
-      if (!is.null(description)) {
-        tags$p(class = "rp-tbl-desc", HTML(description))
-      }
-    )
+  tbl_div <- tags$div(
+    class = "rp-tbl",
+    id = dom_id,
+    if (!is.null(caption) || !is.null(title) || !is.null(number)) {
+      tags$div(
+        class = "rp-tbl-caption",
+        if (!is.null(caption)) {
+          tags$span(class = "rp-badge rp-badge-tbl", caption)
+        },
+        if (!is.null(title)) tags$span(class = "rp-tbl-title", HTML(title))
+      )
+    },
+    widget,
+    if (!is.null(description)) {
+      tags$p(class = "rp-tbl-desc", HTML(description))
+    }
   )
+  if (length(data_attrs)) {
+    tbl_div <- do.call(htmltools::tagAppendAttributes,
+      c(list(tbl_div), data_attrs))
+  }
+  tagList(tbl_div)
 }
 
 #' Subsection heading
@@ -410,7 +419,7 @@ file_path_note <- function(path) {
 #' gallery(imgs, title = "FRiP score plots")
 #' }
 gallery <- function(images, title = NULL, caption = NULL, description = NULL,
-                    miss_ok = TRUE) {
+                    miss_ok = TRUE, data_attrs = NULL) {
   ## defensive: drop NULL/NA/blank entries before anything else
   if (!is.null(images) && is.list(images)) {
     images <- images[!vapply(images, rp_is_empty, logical(1L))]
@@ -445,10 +454,9 @@ gallery <- function(images, title = NULL, caption = NULL, description = NULL,
       type = "button", HTML(as.character(lb))
     )
   }, seq_along(images), labels)
-  tagList(
-    tags$div(
-      class = "rp-gallery",
-      id = sprintf("%s", gid),
+  gal_div <- tags$div(
+    class = "rp-gallery",
+    id = sprintf("%s", gid),
       if (!is.null(caption) || !is.null(title)) {
         tags$div(
           class = "rp-gallery-caption",
@@ -475,8 +483,15 @@ gallery <- function(images, title = NULL, caption = NULL, description = NULL,
         placeholder = "Search sample ...",
         `data-gallery` = gid
       ),
-      tags$div(class = "rp-gallery-list", tagList(list_tags))
-    ),
+    tags$div(class = "rp-gallery-list", tagList(list_tags))
+  )
+  ## machine-readable anchors for the embedded report schema
+  if (length(data_attrs)) {
+    gal_div <- do.call(htmltools::tagAppendAttributes,
+      c(list(gal_div), data_attrs))
+  }
+  tagList(
+    gal_div,
     if (!is.null(description)) tags$p(class = "rp-fig-desc", HTML(description))
   )
 }

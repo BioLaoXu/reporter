@@ -10,6 +10,8 @@ table_block(
   title = NULL,
   caption = NULL,
   description = NULL,
+  dom_id = NULL,
+  data_attrs = NULL,
   ...
 )
 }

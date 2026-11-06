@@ -37,7 +37,8 @@ rp_dependency <- function() {
 #' @param theme A `reporter_theme` from [reporter_theme()].
 #' @return A [htmltools::tagList()] representing a full HTML document.
 #' @noRd
-rp_page <- function(title, navbar, toc, content, footer, theme) {
+rp_page <- function(title, navbar, toc, content, footer, theme,
+                    schema_json = NULL) {
   tagList(
     tags$head(
       tags$meta(charset = "UTF-8"),
@@ -51,6 +52,12 @@ rp_page <- function(title, navbar, toc, content, footer, theme) {
       ## user CSS wins the override chain (theme: extra_css)
       if (!is.null(theme$extra_css) && nzchar(theme$extra_css)) {
         tags$style(HTML(theme$extra_css))
+      },
+      ## machine-readable report schema (index only, never cell data);
+      ## LLM/pipeline consumers read this block instead of the whole HTML
+      if (!is.null(schema_json) && nzchar(schema_json)) {
+        tags$script(HTML(schema_json),
+          id = "rp-schema", type = "application/json", class = "rp-schema")
       }
     ),
     tags$body(

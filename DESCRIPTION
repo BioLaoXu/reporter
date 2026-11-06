@@ -23,6 +23,7 @@ Imports:
     bslib,
     data.table,
     htmltools,
+    jsonlite,
     OXM,
     openxlsx,
     optparse,

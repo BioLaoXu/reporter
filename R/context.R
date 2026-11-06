@@ -100,6 +100,7 @@ report_context <- function(result_path,
   ## counters and registry live in a private environment
   private <- new.env(parent = emptyenv())
   private$fig <- 0L
+  private$schema <- list(figures = list(), tables = list())
   private$tbl <- 0L
   private$toc <- list()
   private$current_module <- NULL
@@ -114,7 +115,11 @@ report_context <- function(result_path,
   ctx$meta <- meta
 
   ## ------------------------------------------------------------------
-  ## internal: next counters
+  ## internal: machine-readable schema registry (P2). Figures and tables
+  ## register themselves here as they render; render_report serializes
+  ## the registry into <script id="rp-schema"> and the optional sidecar.
+  ## NOTE: cell-level data is intentionally NEVER stored here — the
+  ## schema is an index (paths/columns/counts), not a data dump.
   ## ------------------------------------------------------------------
   next_fig <- function() {
     private$fig <- private$fig + 1L
@@ -144,6 +149,11 @@ report_context <- function(result_path,
     invisible(NULL)
   }
 
+  register_schema <- function(kind, entry) {
+    private$schema[[kind]] <- c(private$schema[[kind]], list(entry))
+    invisible(NULL)
+  }
+
   ## ------------------------------------------------------------------
   ## public methods
   ## ------------------------------------------------------------------
@@ -154,13 +164,25 @@ report_context <- function(result_path,
   }
 
   ctx$figure <- function(path, title, description = NULL,
-                         width = NULL, ...) {
+                         width = NULL, source = NULL, ...) {
     n <- next_fig()
     caption <- caption_for("figure", n)
+    fid <- paste0("rp-fig-", n)
+    files <- rp_rel_paths(c(source, path), meta$result_path)
+    register_schema("figures", list(
+      id = fid, module = private$current_module, number = n,
+      kind = "figure", title = title %||% "", files = files, n_images = 1L
+    ))
     figure_block(
       src = path, number = n, title = title,
       caption = caption, description = description,
-      width = width, ...
+      width = width, id = fid,
+      data_attrs = list(
+        `data-rp-fig` = fid,
+        `data-rp-module` = private$current_module,
+        `data-rp-files` = paste(files, collapse = "|")
+      ),
+      ...
     )
   }
 
@@ -181,7 +203,8 @@ report_context <- function(result_path,
   }
 
   ctx$data_table <- function(data, title = NULL, description = NULL,
-                             explain = TRUE, explain_sheet = NULL, ...) {
+                             explain = TRUE, explain_sheet = NULL,
+                             source = NULL, ...) {
     ## defensive: empty input -> placeholder WITHOUT consuming a table
     ## number (a skipped table must not leave a numbering hole)
     if (!rp_df_usable(data)) {
@@ -192,9 +215,21 @@ report_context <- function(result_path,
     }
     n <- next_tbl()
     caption <- caption_for("table", n)
+    tid <- paste0("rp-tbl-", n)
+    sources <- rp_rel_paths(source, meta$result_path)
+    register_schema("tables", list(
+      id = tid, module = private$current_module, number = n,
+      kind = "table", title = title %||% "", sources = sources,
+      columns = as.list(names(data)), n_rows = nrow(data)
+    ))
+    tbl_attrs <- list(
+      `data-rp-tbl` = tid,
+      `data-rp-module` = private$current_module
+    )
     block <- table_block(
       data = data, number = n, title = title,
-      caption = caption, description = description, ...
+      caption = caption, description = description,
+      dom_id = tid, data_attrs = tbl_attrs, ...
     )
     if (!isTRUE(explain)) return(block)
     reg <- tryCatch(ctx$explain_registry(), error = function(e) NULL)
@@ -204,6 +239,13 @@ report_context <- function(result_path,
       explain_table(names(data), reg, sheet = explain_sheet, fill = "待更新"),
       error = function(e) NULL
     )
+    ## mirror the column explanations into the schema entry (index only)
+    if (!is.null(ex) && nrow(ex) > 0L) {
+      tbl_entry <- private$schema$tables[[length(private$schema$tables)]]
+      tbl_entry$explanations <- as.list(stats::setNames(
+        ex[["解释"]], ex[["表格列名"]]))
+      private$schema$tables[[length(private$schema$tables)]] <- tbl_entry
+    }
     ## always attach: every column gets a row, unresolved ones show
     ## 待更新 so missing explanations stay visible (author can fill the
     ## registry workbook to complete them)
@@ -221,9 +263,23 @@ report_context <- function(result_path,
   ctx$gallery <- function(images, title, description = NULL, ...) {
     n <- next_fig()
     caption <- caption_for("figure", n)
+    fid <- paste0("rp-fig-", n)
+    imgs <- unlist(images)
+    files <- rp_rel_paths(imgs, meta$result_path)
+    register_schema("figures", list(
+      id = fid, module = private$current_module, number = n,
+      kind = "gallery", title = title %||% "", files = files,
+      n_images = length(files)
+    ))
     gallery(
       images = images, title = title, caption = caption,
-      description = description, ...
+      description = description,
+      data_attrs = list(
+        `data-rp-fig` = fid,
+        `data-rp-module` = private$current_module,
+        `data-rp-files` = paste(files, collapse = "|")
+      ),
+      ...
     )
   }
 
@@ -249,6 +305,7 @@ report_context <- function(result_path,
   ctx$.rp_set_module <- function(id) private$current_module <- id
   ctx$.rp_toc_entries <- function() private$toc
   ctx$.rp_counters <- function() c(fig = private$fig, tbl = private$tbl)
+  ctx$.rp_schema_entries <- function() private$schema
 
   ctx
 }

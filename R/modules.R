@@ -254,8 +254,12 @@ chip_project_tables <- function(ctx, show_number) {
 ## internal: mean of "93.5%" / "0.935"-style columns -> numeric
 rp_pct_mean <- function(x) {
   if (is.null(x) || !length(x)) return(NA_real_)
-  suppressWarnings(mean(
-    as.numeric(sub("[[:space:]]*%.*$", "", as.character(x))), na.rm = TRUE))
+  ## strip percent signs and thousands separators before coercion; a
+  ## fully non-numeric column (e.g. free text) yields NA quietly
+  v <- suppressWarnings(as.numeric(sub("[[:space:]]*%.*$", "",
+    gsub(",", "", as.character(x), fixed = TRUE))))
+  if (all(is.na(v))) return(NA_real_)
+  mean(v, na.rm = TRUE)
 }
 
 ## internal: semantic status for a QC metric (higher is better)
@@ -318,7 +322,8 @@ mod_chip_qc <- function(show_number = 10L) {
         if (!is.null(total_dt)) {
           tagList(
             ctx$data_table(total_dt, title = "数据质控统计",
-              truncate = names(total_dt), explain_sheet = "QC"),
+              truncate = names(total_dt), explain_sheet = "QC",
+              source = c("1.QC/Raw.Reads.txt", "1.QC/Filtered.Summary.txt")),
             file_path_note("Report/ChIP/1.QC/Raw.Reads.txt | Filtered.Summary.txt")
           )
         } else {
@@ -380,7 +385,8 @@ mod_chip_mapping <- function(show_number = 10L) {
         if (!is.null(map_dt)) {
           tagList(
             ctx$data_table(map_dt, title = "reads比对统计",
-              truncate = names(map_dt), explain_sheet = "MapState")
+              truncate = names(map_dt), explain_sheet = "MapState",
+              source = "2.Mapping/mapping.stats.txt")
           )
         } else {
           empty_block()
@@ -394,7 +400,8 @@ mod_chip_mapping <- function(show_number = 10L) {
         if (!is.null(anno_dt)) {
           tagList(
             ctx$data_table(anno_dt, title = "reads基因组分布统计",
-              truncate = names(anno_dt), explain_sheet = "ReadsAnno")
+              truncate = names(anno_dt), explain_sheet = "ReadsAnno",
+              source = "2.Mapping/genomic.anno.txt")
           )
         } else {
           empty_block()
@@ -479,6 +486,7 @@ mod_chip_peak <- function(show_number = 10L) {
         if (!is.null(peak_dt)) {
           tagList(
             ctx$data_table(peak_dt, title = "组间Peak鉴定",
+              source = annotation[[1L]],
               truncate = names(peak_dt), explain_sheet = "Peak"),
             file_path_note(
               "Report/ChIP/4.PeakCalling/GroupComparePeaks/Profile/Annotation/*.peakAnnotation.csv"
@@ -535,6 +543,7 @@ mod_chip_ip <- function(show_number = 10L) {
         if (!is.null(qc_dt)) {
           tagList(
             ctx$data_table(qc_dt, title = "IP数据质控统计表",
+              source = "3.Quality/IP/QCmetrics.csv",
               truncate = names(qc_dt), explain_sheet = "IP"),
             file_path_note("Report/ChIP/3.Quality/IP/QCmetrics.csv")
           )
@@ -935,6 +944,7 @@ mod_atac_qc <- function(show_number = 10L) {
         rp_kpis_from_qc(raw, filt),
         if (!is.null(filt)) {
           ctx$data_table(filt, title = "质控统计表",
+            source = c("QC/Summary/Filtered.Summary.txt", "QC/Summary/Raw.Reads.txt"),
             truncate = names(filt), explain_sheet = "QC")
         } else {
           empty_block("未找到质控统计表（QC/Summary/）。")
@@ -988,6 +998,7 @@ mod_atac_mapping <- function(show_number = 10L) {
         },
         if (!is.null(base_dt)) {
           ctx$data_table(base_dt, title = "比对碱基统计",
+            source = "Map/Summary/MappedBase.txt",
             truncate = names(base_dt))
         },
         ctx$subsection("比对结果汇总图"),
@@ -1109,6 +1120,7 @@ mod_atac_atacqc <- function(show_number = 10L) {
         ctx$subsection("ATAC 专项质控指标"),
         if (!is.null(ip_dt)) {
           ctx$data_table(ip_dt, title = "bam/Peak 质控指标汇总",
+            source = file.path("ATAC", "IPEval", "bamPeak_dt.csv"),
             truncate = names(ip_dt))
         },
         ctx$subsection("FRiP（峰内 reads 比例）"),
@@ -1174,6 +1186,7 @@ mod_atac_motif <- function(show_number = 10L) {
               nrows = show_number)
             if (is.null(dt)) empty_block() else {
               ctx$data_table(dt, title = "known motif 统计",
+                source = known[1L],
                 truncate = names(dt))
             }
           } else empty_block(),

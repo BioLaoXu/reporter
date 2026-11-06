@@ -9,7 +9,8 @@ gallery(
   title = NULL,
   caption = NULL,
   description = NULL,
-  miss_ok = TRUE
+  miss_ok = TRUE,
+  data_attrs = NULL
 )
 }
 \arguments{

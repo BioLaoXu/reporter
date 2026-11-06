@@ -13,7 +13,8 @@ figure_block(
   width = NULL,
   id = NULL,
   download_name = NULL,
-  missing_ok = TRUE
+  missing_ok = TRUE,
+  data_attrs = NULL
 )
 }
 \arguments{

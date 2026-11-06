@@ -194,3 +194,20 @@ rp_strip_map_comments <- function(x) {
   x <- gsub("//# sourceMappingURL=.*", "", x)
   gsub("/\\*# sourceMappingURL=.*?\\*/", "", x)
 }
+
+## internal: absolute paths -> paths relative to the result root (for the
+## machine-readable schema). Non-matching paths are returned unchanged so
+## externally provided files stay usable.
+rp_rel_paths <- function(paths, root) {
+  paths <- as.character(paths)
+  paths <- paths[!is.na(paths) & nzchar(paths)]
+  if (!length(paths) || is.null(root) || is.na(root)) return(paths)
+  root_n <- sub("/+$", "", root)
+  out <- vapply(paths, function(p) {
+    if (startsWith(p, root_n)) {
+      rel <- substring(p, nchar(root_n) + 1L)
+      sub("^/+", "", rel)
+    } else p
+  }, character(1L), USE.NAMES = FALSE)
+  out
+}

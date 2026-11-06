@@ -210,7 +210,7 @@ rp_module_skip_reason <- function(mod, ctx) {
 #' }
 render_report <- function(report, output = "report.html",
                           theme = NULL, standalone = TRUE,
-                          title = NULL, only = NULL, quiet = FALSE) {
+                          title = NULL, only = NULL, quiet = FALSE, json_sidecar = FALSE) {
   if (!inherits(report, "reporter_report")) {
     stop("`report` must be created by reporter::create_report()", call. = FALSE)
   }
@@ -301,6 +301,7 @@ render_report <- function(report, output = "report.html",
     stop("reporter: no module was rendered — nothing to write", call. = FALSE)
   }
 
+  cited_bib <- NULL
   ## ---- citations: superscripts + cited-only reference list ----------
   bib_file <- ctx$.rp_bib_file
   if (!is.null(bib_file) && file.exists(bib_file)) {
@@ -311,7 +312,7 @@ render_report <- function(report, output = "report.html",
     markers <- regmatches(spec_text,
       gregexpr("\\[@[^\\]]+\\]", spec_text, perl = TRUE))[[1L]]
     cited_keys <- character(0L)
-    if (!identical(as.integer(markers[1L]), -1L)) {
+    if (length(markers) > 0L) {
       keys <- trimws(unlist(strsplit(
         gsub("\\[@|\\]", "", markers), "[;,；，]")))
       keys <- sub("^@", "", keys)
@@ -321,6 +322,7 @@ render_report <- function(report, output = "report.html",
     if (!is.null(bib) && length(cited_keys)) {
       keep <- bib$key %in% cited_keys
       if (any(keep)) bib <- bib[keep, , drop = FALSE]   # cited-only view
+      cited_bib <- bib
     }
     if (!is.null(bib) && nrow(bib) > 0L) {
       keymap <- stats::setNames(seq_len(nrow(bib)), as.character(bib$key))
@@ -343,6 +345,40 @@ render_report <- function(report, output = "report.html",
       }
     }
   }
+  ## ---- machine-readable schema (P2) ---------------------------------
+  ## index layer only: meta/module list/figure & table registry
+  ## entries/cited references. Cell data and image pixels are NEVER
+  ## embedded here.
+  schema <- list(
+    `schema` = "reporter/1.0",
+    meta = list(
+      title = title,
+      project = ctx$meta$project,
+      code = ctx$meta$code,
+      species = ctx$meta$species,
+      ref_version = ctx$meta$ref_version,
+      type = ctx$meta$type,
+      engine = "reactable",
+      generated_at = format(Sys.time(), "%Y-%m-%d %H:%M:%S %Z"),
+      reporter_version = as.character(utils::packageVersion("reporter"))
+    ),
+    modules = lapply(seq_along(rendered), function(i) {
+      list(id = rendered[[i]]$id, title = rendered[[i]]$title, order = i)
+    }),
+    figures = ctx$.rp_schema_entries()$figures,
+    tables = ctx$.rp_schema_entries()$tables,
+    data_root = ctx$meta$result_path
+  )
+  if (!is.null(cited_bib) && nrow(cited_bib) > 0L) {
+    schema$citations <- lapply(seq_len(nrow(cited_bib)), function(i) {
+      list(key = as.character(cited_bib$key[i]), number = i,
+           doi = if (is.na(cited_bib$doi[i])) "" else
+             as.character(cited_bib$doi[i]))
+    })
+  }
+  schema_json <- jsonlite::toJSON(schema, auto_unbox = TRUE,
+    null = "null", na = "null")
+
   toc_entries <- ctx$.rp_toc_entries()
   toc_groups <- lapply(rendered, function(r) {
     secs <- toc_entries[vapply(toc_entries, function(e) {
@@ -359,7 +395,7 @@ render_report <- function(report, output = "report.html",
     rp_module_section(r$id, r$title, r$content)
   }))
   footer <- rp_footer(ctx$meta, theme$brand, theme, length(errors))
-  page <- rp_page(title, navbar, toc, content, footer, theme)
+  page <- rp_page(title, navbar, toc, content, footer, theme, schema_json = schema_json)
 
   ## ---- write --------------------------------------------------------
   output <- as.character(output)[1L]
@@ -376,6 +412,11 @@ render_report <- function(report, output = "report.html",
   } else {
     assets_name <- "report_assets"
     htmltools::save_html(page, output, libdir = assets_name, background = "white")
+  }
+  if (isTRUE(json_sidecar)) {
+    sidecar <- sub("\\.html$", ".json", output)
+    writeLines(jsonlite::toJSON(schema, pretty = TRUE, auto_unbox = TRUE,
+      null = "null", na = "null"), sidecar, useBytes = TRUE)
   }
 
   if (!quiet) {

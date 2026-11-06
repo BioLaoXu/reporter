@@ -11,7 +11,8 @@ render_report(
   standalone = TRUE,
   title = NULL,
   only = NULL,
-  quiet = FALSE
+  quiet = FALSE,
+  json_sidecar = FALSE
 )
 }
 \arguments{
