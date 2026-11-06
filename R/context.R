@@ -70,7 +70,9 @@ report_context <- function(result_path,
                           ref_version = NA_character_,
                           fasta_db = NA_character_,
                           gtf_db = NA_character_,
-                          options = list()) {
+                          options = list(),
+                          dev_mode = FALSE,
+                          explain_fill = "待更新") {
   result_path <- as.character(result_path)[1L]
   if (!dir.exists(result_path)) {
     stop("reporter: result_path does not exist: ", result_path, call. = FALSE)
@@ -96,6 +98,9 @@ report_context <- function(result_path,
     gtf_db = gtf_db,
     options = options,
     engine = "reactable",
+    dev_mode = isTRUE(dev_mode),
+    explain_fill = explain_fill,
+    schema_extra = list(),
     print_mode = FALSE
   )
 
@@ -234,13 +239,26 @@ report_context <- function(result_path,
       table_lite_block(
         data = data, number = n, title = title,
         caption = caption, description = description,
-        dom_id = tid, data_attrs = tbl_attrs
+        dom_id = tid, data_attrs = tbl_attrs,
+        max_rows = if (print_mode) ctx$meta$print_max_rows %||% 100L
+                   else 500L
       )
     } else if (print_mode) {
-      ## print mode: render the FULL table (no pagination UI in the PDF)
+      ## print mode: full rows for normal tables, smart cap for huge
+      ## ones (a 5000-row grid would produce a useless PDF)
+      maxr <- ctx$meta$print_max_rows %||% 100L
+      d2 <- data
+      note <- NULL
+      if (nrow(d2) > maxr) {
+        d2 <- d2[seq_len(maxr), , drop = FALSE]
+        note <- paste0("打印版仅展示前 ", maxr,
+          " 条记录，完整交互式数据请查阅同名 HTML 报告。")
+      }
       table_block(
-        data = data, number = n, title = title,
-        caption = caption, description = description,
+        data = d2, number = n, title = title,
+        caption = caption,
+        description = paste0(c(rp_char1(description), note),
+          collapse = " "),
         dom_id = tid, data_attrs = tbl_attrs, ...,
         pagination = FALSE
       )
@@ -254,9 +272,12 @@ report_context <- function(result_path,
     if (!isTRUE(explain)) return(block)
     reg <- tryCatch(ctx$explain_registry(), error = function(e) NULL)
     if (!length(reg)) return(block)
-    ## every column gets a row; unmatched ones show 待更新
+    ## every column gets a row; unmatched columns fall back to the
+    ## builtin dictionary, then to the configured placeholder (or are
+    ## dropped entirely when explain_fill = NULL)
     ex <- tryCatch(
-      explain_table(names(data), reg, sheet = explain_sheet, fill = "待更新"),
+      explain_table(names(data), reg, sheet = explain_sheet,
+        fill = ctx$meta$explain_fill %||% "待更新"),
       error = function(e) NULL
     )
     ## mirror the column explanations into the schema entry (index only)
@@ -330,6 +351,17 @@ report_context <- function(result_path,
   ctx$.rp_toc_entries <- function() private$toc
   ctx$.rp_counters <- function() c(fig = private$fig, tbl = private$tbl)
   ctx$.rp_schema_entries <- function() private$schema
+  ## module-level business data registration (P5): modules may push
+  ## structured payloads (expression matrices, group maps...) into the
+  ## report schema as the single source of truth for LLM interpreters
+  ## and front-end dynamic widgets. The author controls the size.
+  ctx$register_schema <- function(key, payload) {
+    key <- as.character(key)[1L]
+    stopifnot(length(key) == 1L, nzchar(key))
+    private$schema_extra[[key]] <- payload
+    invisible(NULL)
+  }
+  ctx$.rp_schema_extra <- function() private$schema_extra
   ## reset all per-render state (counters/TOC/schema) so a shared ctx can
   ## safely be rendered multiple times (e.g. interactive + print HTML)
   ctx$.rp_reset_render_state <- function() {
@@ -337,6 +369,7 @@ report_context <- function(result_path,
     private$tbl <- 0L
     private$toc <- list()
     private$schema <- list(figures = list(), tables = list())
+    private$schema_extra <- list()
     invisible(NULL)
   }
 

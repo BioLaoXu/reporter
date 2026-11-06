@@ -17,6 +17,7 @@ reporter_theme(
   caption_lang = c("en", "zh"),
   footer_note = NULL,
   extra_css = NULL,
+  cover_mode = "banner",
   extra_variables = list()
 )
 }

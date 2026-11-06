@@ -52,6 +52,7 @@ export(mod_chip_peak)
 export(mod_chip_qc)
 export(mod_chip_reads_dist)
 export(mod_chip_similarity)
+export(mod_project_block)
 export(mod_references)
 export(module)
 export(qc_pill)
@@ -71,6 +72,7 @@ export(table_block)
 export(table_explain)
 export(text_block)
 export(tippy_cell)
+export(workbench_block)
 importFrom(htmltools,
   HTML,
   css,

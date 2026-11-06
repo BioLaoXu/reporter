@@ -1,0 +1,152 @@
+# ============================================================================
+# BioLaoXu/reporter Declarative YAML Template (Compatible with R/spec.R)
+# Replicates the Upgraded Pulmonary Fibrosis Targeted Transcriptomics Report
+# ============================================================================
+title: "肺纤维化相关基因差异表达热图分析报告"
+subtitle: "Pulmonary Fibrosis-Related Gene Expression Heatmap & Functional Module Landscape Analysis"
+style: card
+theme:
+  preset: smzy
+  primary: "#0D5C75"
+  extra_css: inst/assets/reporter.css
+result: /path/to/Result_SP20260727007
+references:
+  bib: inst/extdata/references.bib
+
+context:
+  project: "mRNA-seq 靶向面板 (4 组 × 4 重复)"
+  species: "Mus_musculus (GRCm39)"
+  code: "SP20260727007"
+  company: "NGS 生信分析交付中心"
+  phonenum: "2026-11-04 · reporter v2.0"
+  caption_lang: "zh"
+
+layers:
+  # Block 01: 参考基因组与项目实验设计作为第一个 Block
+  - id: genome-overview
+    title: "01 · 项目信息、参考基因组与实验样本设计"
+    required_dir: "00_Config"
+    blocks:
+      - subsection: "参考基因组配置与生物信息学分析基线"
+      - text: "本项目针对小鼠肺组织样本开展高通量转录组测序（mRNA-seq）与肺纤维化相关靶向功能面板定量分析。"
+      - table:
+          file: "00_Config/ref_genome_and_pipeline_params.tsv"
+          title: "项目信息与参考基因组参数配置表"
+          path_note: "Report/00_Config/project_context.yaml | ref_genome_GRCm39.json"
+      - subsection: "样本分组设计、比较策略与测序质控明细"
+      - table:
+          file: "01_QC_Mapping/group_design_summary.tsv"
+          title: "实验样本分组与组内平均质控基线"
+      - details:
+          summary: "点击展开查看全部 16 例样本的测序数据量、Q30 与基因组比对率质控明细表"
+          table:
+            file: "01_QC_Mapping/QC_Alignment_Summary_16Samples.tsv"
+            explain: "QC"
+
+  # Block 02: 核心发现与结果摘要
+  - id: exec
+    title: "02 · 核心发现与结果摘要"
+    required_dir: "00_Summary"
+    blocks:
+      - text: "基于 16 个小鼠肺组织 mRNA-seq 样本的 FPKM 表达矩阵，选取 62 个文献与功能数据库支持的纤维化相关基因，归入 7 个功能模块进行多组比较。"
+      - kpi:
+          items:
+            - value: "62 / 62 (100%)"
+              label: "四组间整体差异显著基因 (FDR < 0.05)"
+              status: "ok"
+            - value: "+0.915 (C 组达峰)"
+              label: "全面板平均 log2 表达差值 (vs 参照组)"
+              status: "warn"
+            - value: "+2.483 (M5 炎症)"
+              label: "B 组炎症模块平均升幅 (Il1b +5.384)"
+              status: "bad"
+            - value: "5 / 5 (全线下调)"
+              label: "M7 肺泡上皮/屏障标志基因一致降低"
+              status: "neutral"
+      - callout:
+          type: "tip"
+          title: "核心生物学发现提炼"
+          text: "62 个基因全部检出显著差异（57 个 FDR < 0.001）；B 组以 M5 炎症趋化风暴（+2.483）为主导，C 组以 M1 细胞外基质沉积（+1.875）达峰值，M7 肺泡上皮屏障标志物在三组全部下调。"
+      - callout:
+          type: "warning"
+          title: "研究口径与靶向面板解读边界声明"
+          text: "本面板为先验选定的 62 个已知肺纤维化相关基因集合，并非全转录组无偏筛选结果，不可外推为全基因组差异比例。"
+
+  # Block 03: 多图轮播画廊与交互式单基因表达工作台
+  - id: heatmap
+    title: "03 · 核心结果图轮播画廊与交互式单基因表达工作台"
+    required_dir: "02_Figures"
+    blocks:
+      - subsection: "核心结果图集轮播预览（支持平滑滑动、关键词过滤与全屏灯箱下载）"
+      - gallery:
+          dir: "02_Figures"
+          pattern: ".*\.(png|webp|svg)$"
+          title: "肺纤维化靶向分析核心结果图集 (标准热图 / 数值热图 / 模块轨迹 / 样本 PCA)"
+          path_note: "Result/02_Figures/Pulmonary_Fibrosis_Heatmap_and_PCA.*.pdf | .png"
+      - subsection: "交互式靶向表达热图与单基因跨组表达剖析工作台"
+      - interactive_heatmap:
+          matrix_file: "05_Matrix/All_62Genes_16Samples_log2FPKM.tsv"
+          meta_file: "05_Matrix/All_62Genes_ANOVA_Summary.tsv"
+
+  # Block 04: 七大功能模块表达格局
+  - id: modules
+    title: "04 · 七大功能模块表达格局与定量对比"
+    required_dir: "03_Modules"
+    blocks:
+      - table:
+          file: "03_Modules/Module_Level_Summary_7Modules.tsv"
+          title: "七大功能模块组间平均 log2 差值与主导方向汇总表"
+          path_note: "Result/03_Modules/Module_Level_Summary_7Modules.tsv"
+      - subsection: "各功能模块在四组中的绝对平均表达水平与统计显著性构成"
+      - table:
+          file: "03_Modules/Module_Absolute_Log2_Means.tsv"
+          title: "各模块在 A/B/C/D 四组中的平均 log2(FPKM+1) 水平"
+
+  # Block 05: 关键差异基因双向榜单
+  - id: topgenes
+    title: "05 · 关键差异基因双向榜单（Top 12 上调驱动 vs Top 12 一致下调）"
+    required_dir: "04_TopGenes"
+    blocks:
+      - subsection: "幅度最大的 Top 12 显著上调基因"
+      - table:
+          file: "04_TopGenes/Top12_Upregulated_Genes.tsv"
+          title: "Top 12 显著上调驱动基因"
+      - subsection: "相对参照组一致下调的 Top 12 基因"
+      - table:
+          file: "04_TopGenes/Top12_Downregulated_Genes.tsv"
+          title: "Top 12 一致下调屏障与血管基因"
+
+  # Block 06: 组间差异特征与总结论
+  - id: groups
+    title: "06 · 组间差异特征横向比较与项目结论"
+    required_dir: "00_Summary"
+    blocks:
+      - callout:
+          type: "tip"
+          title: "分析总结论（四项实证归纳）"
+          text: "1. 四组间存在广泛且方向明确的表达差异；2. 基质沉积+炎症激活构成正向主驱动轴；3. 肺泡上皮屏障与微血管内皮呈一致性下调；4. 通路内部存在功能分化。"
+
+  # Block 07: 全部 62 基因交互式结果明细总表
+  - id: master
+    title: "07 · 全部 62 个靶向基因交互式结果明细总表"
+    required_dir: "05_Matrix"
+    blocks:
+      - table:
+          file: "05_Matrix/All_62Genes_Expression_ANOVA_Master.tsv"
+          title: "全部 62 个靶向基因表达均值、组间差值与方差分析明细表"
+          explain: "TargetedPanel"
+          path_note: "Result/05_Matrix/All_62Genes_Expression_ANOVA_Master.tsv"
+
+  # Block 08: 统计口径、软件环境与参考文献
+  - id: methods
+    title: "08 · 统计口径、软件环境与参考文献"
+    blocks:
+      - subsection: "生物信息学处理路线与统计口径逐项说明"
+      - figure:
+          file: "00_Config/pipeline_workflow.svg"
+          title: "生物信息学处理与统计检验技术路线"
+      - subsection: "分析软件与数据库版本清单 & 论文级英文 Methods 模板"
+      - table:
+          file: "00_Config/software_versions.tsv"
+          title: "分析软件与数据库版本列表"
+      - references: true

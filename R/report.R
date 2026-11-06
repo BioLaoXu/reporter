@@ -212,7 +212,7 @@ render_report <- function(report, output = "report.html",
                           theme = NULL, standalone = TRUE,
                           title = NULL, only = NULL, quiet = FALSE, json_sidecar = FALSE,
                           engine = NULL, print_mode = FALSE,
-                          qc_pill = NULL,
+                          qc_pill = NULL, print_max_rows = 100,
                           print_html = FALSE) {
   if (!inherits(report, "reporter_report")) {
     stop("`report` must be created by reporter::create_report()", call. = FALSE)
@@ -231,9 +231,16 @@ render_report <- function(report, output = "report.html",
     ctx$meta$engine <- engine
   }
   ctx$meta$print_mode <- isTRUE(print_mode)
+  ctx$meta$print_max_rows <- as.integer(print_max_rows %||% 100L)
   ## fresh numbering/TOC/schema for every render — a shared ctx no longer
   ## leaks counters across outputs
   ctx$.rp_reset_render_state()
+  ## cover_mode = first_block: drop the cover card and render the
+  ## standard project-info module as block 01 (sci_v1 only)
+  if (identical(theme$style, "sci_v1") &&
+      identical(theme$cover_mode, "first_block")) {
+    report$modules <- c(list(mod_project_block()), report$modules)
+  }
 
   if (!is.null(only)) {
     only <- only[!is.na(only) & nzchar(only)]
@@ -395,6 +402,8 @@ render_report <- function(report, output = "report.html",
              as.character(cited_bib$doi[i]))
     })
   }
+  extra <- ctx$.rp_schema_extra()
+  if (length(extra)) schema$dynamic <- extra
   schema_json <- jsonlite::toJSON(schema, auto_unbox = TRUE,
     null = "null", na = "null")
 
@@ -422,19 +431,18 @@ render_report <- function(report, output = "report.html",
         sprintf("%02d", length(rendered))))
   }
   content <- if (use_sci_v1) {
+    ## rp_page (sci_v1 branch) provides <main class=rp-main>/<rp-container>
     tagList(
-      tags$main(class = "rp-main",
-        tags$div(class = "rp-container",
-          rp_cover(title, ctx$meta, theme$brand, style = "sci_v1"),
-          lapply(seq_along(rendered), function(i) {
-            rp_module_section_sci_v1(rendered[[i]]$id,
-              rendered[[i]]$title, i, rendered[[i]]$content)
-          })
-        )
-      )
+      if (!identical(theme$cover_mode, "first_block") &&
+          !identical(theme$cover_mode, "none")) {
+        rp_cover(title, ctx$meta, theme$brand, style = "sci_v1")
+      },
+      lapply(seq_along(rendered), function(i) {
+        rp_module_section_sci_v1(rendered[[i]]$id,
+          rendered[[i]]$title, i, rendered[[i]]$content)
+      })
     )
   } else {
-    cover <- if (identical(theme$style, "sci_v1")) NULL else NULL
     tagList(
       lapply(rendered, function(r) {
         rp_module_section(r$id, r$title, r$content)
@@ -442,7 +450,8 @@ render_report <- function(report, output = "report.html",
     )
   }
   footer <- rp_footer(ctx$meta, theme$brand, theme, length(errors))
-  page <- rp_page(title, navbar, toc, content, footer, theme, schema_json = schema_json)
+  page <- rp_page(title, navbar, toc, content, footer, theme,
+    schema_json = schema_json, engine = ctx$meta$engine)
 
   ## ---- write --------------------------------------------------------
   output <- as.character(output)[1L]

@@ -94,6 +94,30 @@ rp_data_uri <- function(path, placeholder = TRUE) {
       "R0lGODlhAQABAIAAAAAAAP///yH5BAAAAAAALAAAAAABAAEAAAICRAEAOw=="
     ))
   }
+  ## compression layer: large rasters are downscaled and re-encoded as
+  ## WebP when {magick} is available (typically 70-80% smaller); any
+  ## failure falls back to the original file untouched
+  ext <- tolower(tools::file_ext(path))
+  if (ext %in% c("png", "jpg", "jpeg") &&
+      requireNamespace("magick", quietly = TRUE)) {
+    webp <- tryCatch({
+      img <- magick::image_read(path)
+      info <- magick::image_info(img)
+      if (!is.null(info$width) && info$width > 1360) {
+        img <- magick::image_scale(img, "1360x")
+      }
+      tmp <- tempfile(fileext = ".webp")
+      magick::image_write(img, tmp, format = "webp", quality = 84)
+      if (file.size(tmp) < file.size(path)) tmp else {
+        unlink(tmp); NULL
+      }
+    }, error = function(e) NULL, warning = function(w) NULL)
+    if (!is.null(webp) && file.exists(webp)) {
+      uri <- xfun::base64_uri(webp)
+      unlink(webp)
+      return(uri)
+    }
+  }
   xfun::base64_uri(path)
 }
 

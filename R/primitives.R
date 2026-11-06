@@ -430,10 +430,22 @@ gallery <- function(images, title = NULL, caption = NULL, description = NULL,
   if (is.null(images) || length(images) == 0L) {
     return(empty_block())
   }
+  ## single-image graceful degradation: arrows/search/list would be
+  ## dead chrome — render a plain (lightbox-enabled) figure instead
+  if (length(images) == 1L) {
+    return(figure_block(
+      src = unlist(images)[[1L]], title = title,
+      caption = caption, description = description,
+      missing_ok = miss_ok, data_attrs = data_attrs
+    ))
+  }
   labels <- names(images)
   if (is.null(labels)) {
     labels <- tools::file_path_sans_ext(basename(as.character(images)))
   }
+  ## same-prefix labels (G1_vs_G2.volcano/.ma/.heatmap -> same prefix)
+  ## get a disambiguating suffix instead of identical buttons
+  labels <- make.unique(as.character(labels), sep = "-")
   gid <- paste0("gal-", digest_like(paste(as.character(images), collapse = "|")))
   pane_tags <- Map(function(i, lb) {
     tags$div(
@@ -472,7 +484,8 @@ gallery <- function(images, title = NULL, caption = NULL, description = NULL,
           type = "button", "aria-label" = "Previous",
           rp_icon("chevron-left")
         ),
-        tagList(pane_tags),
+        tags$div(class = "rp-gallery-track", id = paste0(gid, "-track"),
+          tagList(pane_tags)),
         tags$button(
           class = "rp-gallery-arrow rp-gallery-next", `data-gallery` = gid,
           type = "button", "aria-label" = "Next",

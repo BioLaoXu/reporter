@@ -36,8 +36,25 @@
       Array.prototype.forEach.call(tocLinks, function (a) {
         a.classList.remove("active");
       });
+      var navLinks = doc.querySelectorAll(".rp-navbar-link");
+      Array.prototype.forEach.call(navLinks, function (a) {
+        a.classList.remove("active");
+      });
       if (id && map[id]) {
         map[id].classList.add("active");
+        /* dual-layer: keep the parent module link (and the navbar entry)
+         * highlighted while a subsection is in view */
+        var el = doc.getElementById(id);
+        var mod = el && el.closest ? el.closest("section[id]") : null;
+        var modId = mod ? mod.id : null;
+        if (modId) {
+          Array.prototype.forEach.call(
+            doc.querySelectorAll('.rp-toc a[href="#' + modId + '"]'),
+            function (a) { a.classList.add("active"); });
+          Array.prototype.forEach.call(
+            doc.querySelectorAll('.rp-navbar-link[href="#' + modId + '"]'),
+            function (a) { a.classList.add("active"); });
+        }
         // expand/scroll the sidebar entry into view
         var link = map[id];
         var toc = doc.getElementById("rp-toc");
@@ -118,6 +135,10 @@
 
         function show(i) {
           idx = (i + n) % n;
+          var track = gal.querySelector(".rp-gallery-track");
+          if (track) {
+            track.style.transform = "translateX(-" + (idx * 100) + "%)";
+          }
           Array.prototype.forEach.call(panes, function (p, k) {
             p.classList.toggle("active", k === idx);
           });

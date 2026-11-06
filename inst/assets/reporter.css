@@ -351,8 +351,16 @@ h2, h3, h4, h5 { scroll-margin-top: calc(var(--rp-navbar-h, 58px) + 18px); }
   display: flex; align-items: stretch; gap: 10px; position: relative;
   min-height: 300px;
 }
-.rp-gallery-pane { flex: 1; display: none; text-align: center; min-width: 0; }
-.rp-gallery-pane.active { display: block; animation: rp-fade .25s ease; }
+/* smooth track carousel (P5): panes sit side-by-side on a flex track,
+ * switching animates translateX instead of a display jump */
+.rp-gallery-main { position: relative; overflow: hidden; }
+.rp-gallery-track {
+  display: flex; align-items: flex-start;
+  transition: transform .38s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+.rp-gallery-pane { flex: 0 0 100%; min-width: 100%; text-align: center; }
+.rp-gallery-pane.active { display: block; }
 .rp-gallery-img {
   max-width: 100%; max-height: 62vh; cursor: zoom-in;
   border-radius: 6px; margin: 0 auto;
@@ -845,8 +853,8 @@ body.rp-style-card .rp-toc-module-link.active { background: #F0F3FD; color: var(
   }
 
   /* 4. unfold galleries: every pane prints (not only the active one) */
+  .rp-gallery-track { display: block !important; transform: none !important; }
   .rp-gallery-pane { display: block !important; page-break-inside: avoid; break-inside: avoid; margin-bottom: 14px; }
-  .rp-gallery-pane:not(.active) { position: static !important; }
 
   /* 5. unfold collapsed details (belt & braces with the JS hook) */
   details.rp-details > *:not(summary) { display: block !important; }
@@ -1044,3 +1052,66 @@ body.rp-style-sci .rp-grid table.rp-table { font-size: 12.8px; }
 body.rp-style-sci .rp-gallery {
   border: 1px solid var(--rp-border); border-radius: 3px; box-shadow: none;
 }
+
+
+/* ==========================================================================
+   lite engine base — bootstrap runtime is skipped, so the bare-tag
+   defaults bootstrap would provide are supplied here (scoped to lite
+   reports only, other engines keep bslib's cascade untouched)
+   ========================================================================== */
+body.rp-engine-lite, body.rp-engine-lite * { box-sizing: border-box; }
+body.rp-engine-lite h1, body.rp-engine-lite h2,
+body.rp-engine-lite h3, body.rp-engine-lite h4 {
+  margin: 1.1em 0 .4em; line-height: 1.3;
+  font-weight: 700; color: var(--rp-text, #18222C);
+}
+body.rp-engine-lite h1 { font-size: 24px; }
+body.rp-engine-lite h2 { font-size: 20px; }
+body.rp-engine-lite h3 { font-size: 15.5px; }
+body.rp-engine-lite h4 { font-size: 14px; }
+body.rp-engine-lite p { margin: 8px 0; }
+body.rp-engine-lite ul, body.rp-engine-lite ol { margin: 8px 0; padding-left: 22px; }
+body.rp-engine-lite table { border-collapse: collapse; }
+body.rp-engine-lite a { color: var(--rp-primary, #0D6E8C); }
+
+/* ==========================================================================
+   workbench (P5) — interactive heatmap + gene inspector card
+   ========================================================================== */
+.rp-workbench { border: 1px solid var(--rp-border, #DCE3EA); border-radius: 3px; background: #fff; }
+.rp-wb-chips { display: flex; flex-wrap: wrap; gap: 6px; padding: 10px 14px; border-bottom: 1px solid var(--rp-border, #DCE3EA); }
+.rp-wb-chip {
+  font-family: inherit; font-size: 12px; cursor: pointer;
+  padding: 3px 10px; border-radius: 99px;
+  border: 1px solid var(--rp-border, #DCE3EA); background: #fff; color: var(--rp-text-mid, #425262);
+}
+.rp-wb-chip.active { background: var(--rp-primary, #0D5C75); color: #fff; border-color: var(--rp-primary, #0D5C75); }
+.rp-wb-chip .rp-wb-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 5px; }
+.rp-wb-grid { display: grid; grid-template-columns: minmax(0, 1fr) 320px; }
+.rp-wb-heat { border-right: 1px solid var(--rp-border, #DCE3EA); min-width: 0; }
+.rp-wb-table { width: 100%; border-collapse: collapse; font-size: 11px; font-family: var(--rp-font-mono, Consolas, monospace); }
+.rp-wb-table th { position: sticky; top: 0; background: #F4F7FA; font-weight: 600; padding: 4px 6px; border-bottom: 2px solid #CBD5E1; text-align: left; white-space: nowrap; }
+.rp-wb-grourow th { padding: 0 6px; height: 8px; }
+.rp-wb-row { cursor: pointer; }
+.rp-wb-row:hover td { outline: 1px solid var(--rp-primary, #0D5C75); outline-offset: -1px; }
+.rp-wb-row.selected td { outline: 2px solid var(--rp-primary, #0D5C75); outline-offset: -1px; }
+.rp-wb-cell { padding: 3px 5px; text-align: center; min-width: 34px; color: transparent; }
+.rp-wb-cell:hover { color: var(--rp-ink, #18222C); }
+.rp-wb-card { padding: 14px 16px; font-size: 12.5px; }
+.rp-wb-card-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 10px; }
+.rp-wb-card-eyebrow { font-size: 10.5px; color: var(--rp-primary, #0D5C75); font-weight: 700; letter-spacing: .5px; }
+.rp-wb-symbol { font-size: 19px; font-weight: 700; color: var(--rp-ink, #18222C); font-family: var(--rp-font-mono, Consolas, monospace); }
+.rp-pill { font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 99px; border: 1px solid var(--rp-border, #DCE3EA); background: #fff; color: var(--rp-ink-mid, #425262); white-space: nowrap; }
+.rp-wb-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; background: var(--rp-bg-panel, #F7F9FB); border: 1px solid var(--rp-border, #DCE3EA); padding: 8px 10px; margin-bottom: 10px; }
+.rp-wb-stat-k { font-size: 11px; color: var(--rp-ink-dim, #6C7C8C); }
+.rp-wb-stat-v { font-size: 14px; font-weight: 700; font-family: var(--rp-font-mono, Consolas, monospace); color: var(--rp-ink, #18222C); }
+.rp-wb-bars-title { font-size: 12px; font-weight: 700; color: var(--rp-ink-mid, #425262); margin: 8px 0 4px; }
+.rp-wb-bar-row { display: flex; align-items: center; gap: 8px; margin: 4px 0; }
+.rp-wb-bar-g { flex: 0 0 22px; font-weight: 700; color: var(--rp-ink, #18222C); }
+.rp-wb-bar-track { flex: 1; height: 14px; background: var(--rp-bg-panel, #F7F9FB); border: 1px solid var(--rp-line-light, #EDF1F5); }
+.rp-wb-bar { display: block; height: 100%; }
+.rp-wb-bar-v { flex: 0 0 96px; font-family: var(--rp-font-mono, Consolas, monospace); font-size: 11px; color: var(--rp-ink-mid, #425262); }
+.rp-wb-delta { color: var(--rp-ink-dim, #6C7C8C); }
+.rp-wb-reps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; }
+.rp-wb-rep { background: var(--rp-bg-panel, #F7F9FB); border: 1px solid var(--rp-line-light, #EDF1F5); padding: 4px 6px; }
+.rp-wb-rep-s { display: block; font-size: 10px; color: var(--rp-ink-dim, #6C7C8C); }
+.rp-wb-rep-v { font-family: var(--rp-font-mono, Consolas, monospace); font-size: 11px; color: var(--rp-ink, #18222C); }

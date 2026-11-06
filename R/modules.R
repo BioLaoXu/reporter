@@ -19,6 +19,40 @@
 NULL
 
 ## ---------------------------------------------------------------------
+#' Standard first block: project info + experimental design
+#'
+#' Used with `reporter_theme(cover_mode = "first_block")` (sci_v1): the
+#' big cover card is dropped and this standard module renders the
+#' project meta grid plus the group design table as block 01.
+#' @export
+mod_project_block <- function() {
+  module(id = "project", title = "项目信息与实验设计",
+    required_dirs = character(0),
+    render = function(ctx) {
+      kv <- list(
+        `项目` = ctx$meta$project,
+        `项目编号` = ctx$meta$code,
+        `物种` = ctx$meta$species,
+        `参考基因组` = ctx$meta$ref_version,
+        `报告日期` = as.character(ctx$meta$date))
+      kv <- kv[!vapply(kv, function(x)
+        rp_is_empty(x) || (is.character(x) && is.na(x)), logical(1))]
+      g <- file.path(ctx$meta$result_path, "0.SampleInfo", "GroupInfo.txt")
+      gdt <- if (file.exists(g)) {
+        tryCatch(read_result_table(g, sep = "\t"), error = function(e) NULL)
+      } else NULL
+      tagList(
+        ctx$subsection("项目信息"),
+        meta_grid(as.list(kv)),
+        if (!is.null(gdt)) {
+          tagList(
+            ctx$subsection("样本分组设计"),
+            ctx$data_table(gdt, title = "实验分组信息"))
+        }
+      )
+    })
+}
+
 ## References (shared across pipelines)
 ## ---------------------------------------------------------------------
 
@@ -40,6 +74,7 @@ NULL
 #' \dontrun{
 #' report <- create_report(ctx) |> add_module(mod_references())
 #' }
+
 mod_references <- function(bib_file = NULL, title = "参考文献",
                            only_keys = NULL) {
   module(
@@ -837,7 +872,9 @@ mod_chip_methods <- function() {
           ctx$data_table(tool_dt, title = "分析软件列表及版本",
             searchable = FALSE, default_page_size = 20L, align = "left")
         } else {
-          empty_block("未提供软件版本信息（可通过 report_context(options = list(software = ...)) 传入）。")
+          empty_block(if (isTRUE(ctx$meta$dev_mode))
+            "未提供软件版本信息（可通过 report_context(options = list(software = ...)) 传入）。"
+            else "未提供软件版本信息。")
         },
         ctx$subsection("Methods描述"),
         ctx$note("为了方便客户撰写文章，可向分析人员索取英文版Methods文档作为参考。")

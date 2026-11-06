@@ -15,6 +15,8 @@ render_report(
   json_sidecar = FALSE,
   engine = NULL,
   print_mode = FALSE,
+  qc_pill = NULL,
+  print_max_rows = 100,
   print_html = FALSE
 )
 }

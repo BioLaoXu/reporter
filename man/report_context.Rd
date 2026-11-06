@@ -18,7 +18,9 @@ report_context(
   ref_version = NA_character_,
   fasta_db = NA_character_,
   gtf_db = NA_character_,
-  options = list()
+  options = list(),
+  dev_mode = FALSE,
+  explain_fill = "待更新"
 )
 }
 \arguments{

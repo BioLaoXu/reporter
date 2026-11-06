@@ -24,7 +24,7 @@ rp_dependency <- function() {
     version = utils::packageVersion("reporter"),
     src = system.file("assets", package = "reporter"),
     stylesheet = "reporter.css",
-    script = c("reporter.js", "reporter-lite.js"),
+    script = c("reporter.js", "reporter-lite.js", "reporter-workbench.js"),
     all_files = FALSE
   )
 }
@@ -50,7 +50,8 @@ sci_v1_dependency <- function() {
 #' @return A [htmltools::tagList()] representing a full HTML document.
 #' @noRd
 rp_page <- function(title, navbar, toc, content, footer, theme,
-                    schema_json = NULL) {
+                    schema_json = NULL, engine = NULL) {
+  sci_v1 <- identical(theme$style, "sci_v1")
   tagList(
     tags$head(
       tags$meta(charset = "UTF-8"),
@@ -59,7 +60,11 @@ rp_page <- function(title, navbar, toc, content, footer, theme,
         content = "width=device-width, initial-scale=1, shrink-to-fit=no"
       ),
       tags$title(title),
-      bslib::bs_theme_dependencies(theme$bs_theme),
+      ## lite engine: the bootstrap runtime is dead weight there (its
+      ## base styles are replaced by the rp-engine-lite normalize block)
+      if (!identical(engine, "lite")) {
+        bslib::bs_theme_dependencies(theme$bs_theme)
+      },
       rp_dependency(),
       ## user CSS wins the override chain (theme: extra_css)
       if (!is.null(theme$extra_css) && nzchar(theme$extra_css)) {
@@ -78,24 +83,33 @@ rp_page <- function(title, navbar, toc, content, footer, theme,
       class = paste(c("rp-body",
         if (!identical(theme$style %||% "classic", "classic")) {
           paste0("rp-style-", theme$style)
-        }),
+        },
+        if (identical(engine, "lite")) "rp-engine-lite"),
         collapse = " "),
       `data-rp-caption-lang` = theme$caption_lang,
       navbar,
-      tags$div(
-        class = "rp-layout",
-        tags$nav(
-          class = "rp-toc", id = "rp-toc",
-          `aria-label` = "Table of contents",
-          tags$div(class = "rp-toc-inner", toc)
-        ),
-        tags$main(
-          class = "rp-content",
-          id = "rp-content",
-          content,
-          footer
+      if (sci_v1) {
+        ## sci_v1 shell owns its own nav/main DOM (no double wrappers)
+        tags$div(class = "rp-layout",
+          toc,
+          tags$main(class = "rp-main",
+            tags$div(class = "rp-container", content, footer)))
+      } else {
+        tags$div(
+          class = "rp-layout",
+          tags$nav(
+            class = "rp-toc", id = "rp-toc",
+            `aria-label` = "Table of contents",
+            tags$div(class = "rp-toc-inner", toc)
+          ),
+          tags$main(
+            class = "rp-content",
+            id = "rp-content",
+            content,
+            footer
+          )
         )
-      )
+      }
     )
   )
 }

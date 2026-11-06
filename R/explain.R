@@ -58,6 +58,22 @@ load_explanations <- function(xlsx = NULL) {
   reg
 }
 
+## builtin fallback dictionary for high-frequency bioinformatics
+## columns (authoritative registry entries always win)
+rp_builtin_dic <- c(
+  SampleName = "样本名称", sample = "样本名称", Group = "分组",
+  RawReads = "原始reads数", `Raw Reads` = "原始reads数",
+  CleanReads = "质控后reads数", `Clean Reads` = "质控后reads数",
+  CleanBases = "质控后碱基数", Q20 = "Q20碱基百分比",
+  Q30 = "Q30碱基百分比", GC = "GC含量占比",
+  total_map = "整体比对率", unique_map = "唯一比对率",
+  log2FC = "差异倍数log2值", log2fc = "差异倍数log2值",
+  pvalue = "显著性p值", p_value = "显著性p值",
+  padj = "校正后p值", FDR = "假发现率",
+  FPKM = "Fragments Per Kilobase per Million",
+  TPM = "Transcripts Per Kilobase per Million"
+)
+
 #' Resolve explanations for a set of table columns
 #'
 #' @param cols character vector. Column names of the report table.
@@ -98,6 +114,17 @@ explain_table <- function(cols, registry = load_explanations(),
   out <- if (length(rows)) do.call(rbind, rows) else
     data.frame(`表格列名` = character(0), `解释` = character(0),
       check.names = FALSE, stringsAsFactors = FALSE)
+  ## defensive: unmatched columns first fall back to the builtin
+  ## dictionary, then to the placeholder text
+  if (nrow(out) > 0L) {
+    builtin <- setdiff(cols, out[["表格列名"]])
+    builtin <- builtin[builtin %in% names(rp_builtin_dic)]
+    if (length(builtin)) {
+      out <- rbind(out, data.frame(
+        `表格列名` = builtin, `解释` = unname(rp_builtin_dic[builtin]),
+        check.names = FALSE, stringsAsFactors = FALSE))
+    }
+  }
   ## defensive: columns with no explanation get the placeholder text
   if (!is.null(fill)) {
     missing <- setdiff(cols, out[["表格列名"]])
