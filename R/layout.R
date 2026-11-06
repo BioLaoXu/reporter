@@ -143,6 +143,12 @@ rp_navbar <- function(title, meta, brand, module_links) {
         }
       ),
       tags$button(
+        class = "rp-btn-top rp-btn-pdf", type = "button",
+        title = "打开浏览器打印对话框，另存为 PDF",
+        onclick = "exportReportToPDF()",
+        "导出 PDF"
+      ),
+      tags$button(
         class = "rp-toc-toggle", type = "button",
         `aria-label` = "Toggle sidebar", `aria-expanded` = "true",
         rp_icon("chevron-left")

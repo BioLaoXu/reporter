@@ -211,7 +211,8 @@ rp_module_skip_reason <- function(mod, ctx) {
 render_report <- function(report, output = "report.html",
                           theme = NULL, standalone = TRUE,
                           title = NULL, only = NULL, quiet = FALSE, json_sidecar = FALSE,
-                          engine = NULL, print_mode = FALSE) {
+                          engine = NULL, print_mode = FALSE,
+                          print_html = FALSE) {
   if (!inherits(report, "reporter_report")) {
     stop("`report` must be created by reporter::create_report()", call. = FALSE)
   }
@@ -229,6 +230,9 @@ render_report <- function(report, output = "report.html",
     ctx$meta$engine <- engine
   }
   ctx$meta$print_mode <- isTRUE(print_mode)
+  ## fresh numbering/TOC/schema for every render — a shared ctx no longer
+  ## leaks counters across outputs
+  ctx$.rp_reset_render_state()
 
   if (!is.null(only)) {
     only <- only[!is.na(only) & nzchar(only)]
@@ -428,6 +432,14 @@ render_report <- function(report, output = "report.html",
     sidecar <- sub("\\.html$", ".json", output)
     writeLines(jsonlite::toJSON(schema, pretty = TRUE, auto_unbox = TRUE,
       null = "null", na = "null"), sidecar, useBytes = TRUE)
+  }
+  if (isTRUE(print_html)) {
+    ## companion print-ready HTML (full tables, unfolded details) for the
+    ## navbar "导出 PDF" button and manual Ctrl+P
+    print_out <- sub("\\.html$", "_print.html", output)
+    render_report(report, output = print_out, theme = theme,
+      standalone = standalone, title = title, engine = engine,
+      print_mode = TRUE, quiet = quiet)
   }
 
   if (!quiet) {

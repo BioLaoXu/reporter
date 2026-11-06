@@ -58,3 +58,36 @@ test_that("export_pdf keeps the print HTML and explains when chrome is absent", 
   expect_match(res, "\\.html$")
   expect_true(file.exists(res))
 })
+
+test_that("print_html companion + render-state reset keep numbering stable", {
+  tmp <- make_chip_fixture()
+  ctx <- report_context(tmp, type = "1")
+  report <- do.call(add_module,
+    c(list(report = create_report(ctx)), chip_report_modules()))
+  out <- tempfile(fileext = ".html")
+  res <- render_report(report, output = out, print_html = TRUE,
+    theme = reporter_theme(preset = "blank"), quiet = TRUE)
+  print_out <- sub("\\.html$", "_print.html", out)
+  expect_true(file.exists(print_out))
+  ## counters were reset before the print re-render: identical numbering
+  h1 <- paste(readLines(res$output, warn = FALSE), collapse = "\n")
+  h2 <- paste(readLines(print_out, warn = FALSE), collapse = "\n")
+  fig1 <- length(gregexpr("rp-badge-fig", h1, fixed = TRUE)[[1]])
+  fig2 <- length(gregexpr("rp-badge-fig", h2, fixed = TRUE)[[1]])
+  expect_identical(fig1, fig2)
+  ## navbar export button + JS hook present
+  expect_match(h1, "rp-btn-pdf", fixed = TRUE)
+  expect_match(h1, "exportReportToPDF", fixed = TRUE)
+})
+
+test_that("repeated renders on a shared ctx keep counters stable", {
+  tmp <- make_chip_fixture()
+  ctx <- report_context(tmp, type = "1")
+  report <- do.call(add_module,
+    c(list(report = create_report(ctx)), chip_report_modules()))
+  res1 <- render_report(report, output = tempfile(fileext = ".html"),
+    theme = reporter_theme(preset = "blank"), quiet = TRUE)
+  res2 <- render_report(report, output = tempfile(fileext = ".html"),
+    theme = reporter_theme(preset = "blank"), quiet = TRUE)
+  expect_identical(res1$counters, res2$counters)
+})

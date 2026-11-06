@@ -827,7 +827,7 @@ body.rp-style-card .rp-toc-module-link.active { background: #F0F3FD; color: var(
   }
 
   /* 2. hide interactive chrome */
-  .rp-navbar, .rp-toc, .rp-toc-toggle, .rp-lightbox,
+  .rp-navbar, .rp-toc, .rp-toc-toggle, .rp-lightbox, .rp-btn-pdf,
   .rp-gallery-search, .rp-gallery-list,
   .rp-grid-toolbar, .rt-pagination {
     display: none !important;

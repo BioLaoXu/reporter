@@ -232,3 +232,32 @@
     init();
   }
 })();
+
+/* ------------------------------------------------------------------
+ * Print / PDF export hooks (P3, per 报告优化.md §7.2)
+ * "导出 PDF" button and Ctrl+P: unfold all collapsed details blocks
+ * for printing, restore them afterwards.
+ * ------------------------------------------------------------------ */
+(function () {
+  "use strict";
+  var closedDetails = [];
+
+  function prepareForPDF() {
+    closedDetails = [];
+    document.querySelectorAll("details.rp-details:not([open])")
+      .forEach(function (d) {
+        closedDetails.push(d);
+        d.setAttribute("open", "open");
+      });
+  }
+  function restoreAfterPDF() {
+    closedDetails.forEach(function (d) { d.removeAttribute("open"); });
+    closedDetails = [];
+  }
+  window.addEventListener("beforeprint", prepareForPDF);
+  window.addEventListener("afterprint", restoreAfterPDF);
+  window.exportReportToPDF = function () {
+    prepareForPDF();
+    setTimeout(function () { window.print(); }, 150);
+  };
+})();

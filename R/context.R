@@ -330,6 +330,15 @@ report_context <- function(result_path,
   ctx$.rp_toc_entries <- function() private$toc
   ctx$.rp_counters <- function() c(fig = private$fig, tbl = private$tbl)
   ctx$.rp_schema_entries <- function() private$schema
+  ## reset all per-render state (counters/TOC/schema) so a shared ctx can
+  ## safely be rendered multiple times (e.g. interactive + print HTML)
+  ctx$.rp_reset_render_state <- function() {
+    private$fig <- 0L
+    private$tbl <- 0L
+    private$toc <- list()
+    private$schema <- list(figures = list(), tables = list())
+    invisible(NULL)
+  }
 
   ctx
 }
