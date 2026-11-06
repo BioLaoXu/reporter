@@ -64,6 +64,12 @@ render_report(build(new_ctx()),
                          style = "card"),
   title = "ChIP-seq Analysis Report")
 
+## 1d) sci editorial skin (报告优化.md v2.0 design contract)
+render_report(build(new_ctx()),
+  output = file.path(out_dir, "chip_demo_sci.html"),
+  theme = reporter_theme(preset = "blank", style = "sci"),
+  title = "ChIP-seq Analysis Report")
+
 ## 2) smzy brand skin
 render_report(build(new_ctx()),
   output = file.path(out_dir, "chip_demo_smzy.html"),

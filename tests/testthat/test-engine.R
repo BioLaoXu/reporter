@@ -50,3 +50,22 @@ test_that("spec YAML engine field reaches the render pipeline", {
   ## spec has no engine field -> default reactable
   expect_match(html, "reactable html-widget", fixed = TRUE)
 })
+
+test_that("sci skin applies the design-contract tokens", {
+  tmp <- make_chip_fixture()
+  ctx <- report_context(tmp, type = "1")
+  report <- do.call(add_module,
+    c(list(report = create_report(ctx)), chip_report_modules()))
+  out <- tempfile(fileext = ".html")
+  res <- render_report(report, output = out,
+    theme = reporter_theme(preset = "blank", style = "sci"), quiet = TRUE)
+  html <- paste(readLines(res$output, warn = FALSE), collapse = "\n")
+  expect_match(html, "rp-style-sci", fixed = TRUE)
+  ## contract tokens present in the inlined stylesheet
+  expect_match(html, "--rp-primary: #0D5C75", fixed = TRUE)
+  expect_match(html, "--rp-up: #B2182B", fixed = TRUE)
+  expect_match(html, "--rp-down: #2166AC", fixed = TRUE)
+  ## module numbering counter + mono path capsule
+  expect_match(html, "counter-increment: rp-mod", fixed = TRUE)
+  expect_match(html, "rp-filepath", fixed = TRUE)
+})

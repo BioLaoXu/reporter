@@ -861,3 +861,186 @@ body.rp-style-card .rp-toc-module-link.active { background: #F0F3FD; color: var(
   thead { display: table-header-group; }   /* repeat headers on long tables */
   .rp-tbl, .rp-grid table.rp-table, .rt-table { page-break-inside: auto; }
 }
+
+/* ==========================================================================
+   sci skin — Scientific Editorial (P4, per 报告优化.md v2.0 §二/三)
+   Nature/NEJM-adjacent academic journal look. Tokens from the design
+   contract; legacy --rp-* names are aliased so every existing component
+   inherits without code changes. Activated by reporter_theme(style="sci")
+   → body.rp-style-sci.
+   ========================================================================== */
+body.rp-style-sci {
+  /* design tokens (contract §二) */
+  --rp-primary: #0D5C75;
+  --rp-primary-dark: #073B4C;
+  --rp-primary-light: #EBF4F7;
+  --rp-up: #B2182B;
+  --rp-down: #2166AC;
+  --rp-ok: #1F7A4C;
+  --rp-warn: #9A6700;
+  --rp-bad: #B91C1C;
+  /* legacy aliases → contract greys */
+  --rp-text: #18222C;
+  --rp-text-mid: #425262;
+  --rp-text-dim: #6C7C8C;
+  --rp-border: #DCE3EA;
+  --rp-bg-panel: #F7F9FB;
+  --rp-page-bg: #FFFFFF;
+  --rp-toc-bg: #F7F9FB;
+  --rp-navbar-bg: #FFFFFF;
+  --rp-radius: 3px;
+  /* reactable theme variables */
+  --rp-tbl-header-bg: #F4F7FA;
+  --rp-tbl-header-fg: #18222C;
+  --rp-tbl-header-hover: #EAF0F5;
+  /* typography */
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    "Source Han Sans SC", "Noto Sans CJK SC", "PingFang SC",
+    "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  font-size: 14px;
+  line-height: 1.68;
+  color: var(--rp-text);
+  font-variant-numeric: tabular-nums;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---- navbar: 56px plain white command bar ---- */
+body.rp-style-sci .rp-navbar {
+  height: 56px;
+  background: #fff;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  box-shadow: none;
+  border-bottom: 1px solid var(--rp-border);
+}
+body.rp-style-sci .rp-navbar-title { font-size: 15px; font-weight: 700; color: var(--rp-text); }
+body.rp-style-sci .rp-navbar-badge {
+  background: transparent; color: var(--rp-text-dim); padding: 0;
+  font-weight: 500; font-size: 11.5px; font-family: var(--rp-font-mono, Consolas, monospace);
+}
+body.rp-style-sci .rp-navbar-badge + .rp-navbar-badge::before {
+  content: "·"; margin-right: 8px; color: var(--rp-border);
+}
+body.rp-style-sci .rp-navbar-link { color: var(--rp-text-mid); font-size: 12.8px; }
+body.rp-style-sci .rp-navbar-link:hover { background: #F0F4F6; color: var(--rp-primary); }
+
+/* ---- toc: 256px panel ---- */
+body.rp-style-sci .rp-toc { width: 256px; background: var(--rp-bg-panel); }
+body.rp-style-sci .rp-toc-module-link,
+body.rp-style-sci .rp-toc-link {
+  border-left: 3px solid transparent; border-radius: 3px;
+  font-size: 12.8px; font-weight: 600; color: var(--rp-text-mid);
+}
+body.rp-style-sci .rp-toc-link.active,
+body.rp-style-sci .rp-toc-module-link.active {
+  background: #fff; color: var(--rp-primary); border-left-color: var(--rp-primary);
+}
+
+/* ---- layout: 1220px wide workbench ---- */
+body.rp-style-sci .rp-content { padding: 34px 48px 10px; }
+body.rp-style-sci .rp-module,
+body.rp-style-sci .rp-cover { max-width: 1220px; }
+
+/* ---- module: hairline section, numbered "01" style ---- */
+body.rp-style-sci { counter-reset: rp-mod; }
+body.rp-style-sci .rp-module {
+  border-bottom: 1px solid var(--rp-border);
+  padding-bottom: 30px;
+}
+body.rp-style-sci .rp-module-title {
+  font-size: 20px; font-weight: 700; line-height: 1.35;
+  color: var(--rp-text); letter-spacing: -0.2px;
+  border-bottom: none; padding-bottom: 0; margin-bottom: 12px;
+}
+body.rp-style-sci .rp-module-title::before {
+  counter-increment: rp-mod;
+  content: "0" counter(rp-mod);
+  font-family: var(--rp-font-mono, Consolas, monospace);
+  font-size: 13px; font-weight: 700; color: var(--rp-primary);
+  margin-right: 12px; vertical-align: 2px;
+}
+body.rp-style-sci .rp-subsection {
+  font-size: 15.5px; font-weight: 700; line-height: 1.4;
+  color: var(--rp-text); margin-top: 30px;
+  padding-left: 10px; border-left: 3px solid var(--rp-primary);
+  border-bottom: none;
+}
+body.rp-style-sci .rp-text { font-size: 14px; line-height: 1.68; margin: 10px 0; }
+
+/* ---- cover: compact academic head ---- */
+body.rp-style-sci .rp-cover {
+  border-radius: 0; background: #fff; color: var(--rp-text);
+  border-top: 3px solid var(--rp-primary);
+  border-bottom: 1px solid var(--rp-border);
+  box-shadow: none;
+}
+body.rp-style-sci .rp-cover-inner { padding: 22px 4px 20px; }
+body.rp-style-sci .rp-cover-title {
+  font-size: 26px; font-weight: 700; line-height: 1.3;
+  letter-spacing: -0.2px; color: var(--rp-text);
+}
+body.rp-style-sci .rp-cover-subtitle {
+  font-family: var(--rp-font-mono, Consolas, monospace);
+  font-size: 11.5px; font-weight: 600; color: var(--rp-primary);
+  letter-spacing: 0.8px;
+}
+body.rp-style-sci .rp-kv td {
+  background: transparent; border-bottom: 1px solid var(--rp-border);
+  padding: 7px 2px; font-size: 13px;
+}
+body.rp-style-sci .rp-cover .rp-kv { backdrop-filter: none; }
+
+/* ---- KPI strip: per-card 3px top bar, ink values ---- */
+body.rp-style-sci .rp-kpi-row { border-color: var(--rp-border); border-radius: 3px; }
+body.rp-style-sci .rp-kpi { background: #fff; }
+body.rp-style-sci .rp-kpi-value { font-size: 24px; font-weight: 700; color: var(--rp-text); }
+body.rp-style-sci .rp-kpi-ok .rp-kpi-value { color: var(--rp-ok); }
+body.rp-style-sci .rp-kpi-warn .rp-kpi-value { color: var(--rp-warn); }
+body.rp-style-sci .rp-kpi-bad .rp-kpi-value { color: var(--rp-bad); }
+
+/* ---- callouts: 3px left rule on panel bg ---- */
+body.rp-style-sci .rp-callout {
+  border: none; border-left: 3px solid var(--rp-primary);
+  border-radius: 0; background: var(--rp-bg-panel);
+  padding: 12px 16px; font-size: 13.5px;
+}
+body.rp-style-sci .rp-callout-note    { border-left-color: var(--rp-primary); }
+body.rp-style-sci .rp-callout-tip     { border-left-color: var(--rp-ok); }
+body.rp-style-sci .rp-callout-warning { border-left-color: var(--rp-warn); }
+body.rp-style-sci .rp-callout-danger  { border-left-color: var(--rp-bad); }
+
+/* ---- filepath capsule: mono, dim ---- */
+body.rp-style-sci .rp-filepath {
+  font-family: var(--rp-font-mono, Consolas, monospace);
+  font-size: 11.5px; font-weight: 500; color: var(--rp-text-dim);
+  background: var(--rp-bg-panel); border: 1px solid var(--rp-border);
+  padding: 3px 10px; border-radius: 2px;
+}
+body.rp-style-sci .rp-filepath code {
+  background: transparent; color: inherit; padding: 0; font-size: inherit;
+}
+
+/* ---- figures: image on the page, plain caption prefix ---- */
+body.rp-style-sci .rp-fig { border: none; box-shadow: none; padding: 6px 0 0; background: transparent; }
+body.rp-style-sci .rp-fig:hover { box-shadow: none; transform: none; }
+body.rp-style-sci .rp-figcaption { margin-top: 8px; }
+body.rp-style-sci .rp-badge {
+  background: transparent !important; color: var(--rp-text-dim);
+  padding: 0; margin-right: 7px; border-radius: 0;
+  font-weight: 600; font-size: 12px; font-variant-numeric: tabular-nums;
+}
+body.rp-style-sci .rp-badge::after { content: "·"; margin-left: 7px; color: var(--rp-border); }
+
+/* ---- tables: reactable + lite both inherit contract greys ---- */
+body.rp-style-sci .rp-tbl {
+  border: 1px solid var(--rp-border); border-radius: 3px;
+  box-shadow: none; padding: 12px;
+}
+body.rp-style-sci .rt-td { font-size: 12.8px; }
+body.rp-style-sci .rt-th { font-weight: 600; }
+body.rp-style-sci .rp-grid table.rp-table { font-size: 12.8px; }
+
+/* ---- gallery: hairline frame ---- */
+body.rp-style-sci .rp-gallery {
+  border: 1px solid var(--rp-border); border-radius: 3px; box-shadow: none;
+}
