@@ -1386,3 +1386,187 @@ body.header-dossier .rp-qc-stamp-card {
   border-radius: 99px;
 }
 
+
+/* ==========================================================================
+   NORMALIZATION LAYER — every reporter component re-skinned to the
+   sci_v1 design language (no classic-card leakage). Components without
+   a counterpart in the reference page follow its design language.
+   ========================================================================== */
+body.rp-style-sci_v1 .rp-content {
+  margin-left: var(--rp-toc-w);
+  padding: 28px 40px 80px;
+}
+body.rp-style-sci_v1 .rp-layout { display: block; padding-top: var(--rp-navbar-h); }
+body.rp-style-sci_v1 .rp-container { max-width: 1220px; margin: 0 auto; }
+body.rp-style-sci_v1 .rp-body { font-size: 14px; line-height: 1.68; }
+body.rp-style-sci_v1 .rp-text { font-size: 14px; line-height: 1.68; margin: 10px 0; }
+body.rp-style-sci_v1 .rp-toc-inner { padding: 16px 12px 36px; }
+body.rp-style-sci_v1 .rp-cover-title { font-size: 26px; }
+body.rp-style-sci_v1 .rp-cover-subtitle { font-size: 11.5px; }
+
+/* ---- badges: plain text prefix, no pills ---- */
+body.rp-style-sci_v1 .rp-badge,
+body.rp-style-sci_v1 .rp-badge-fig,
+body.rp-style-sci_v1 .rp-badge-tbl {
+  background: transparent !important;
+  color: var(--rp-ink-dim);
+  padding: 0; margin-right: 7px; border-radius: 0;
+  font-weight: 600; font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+body.rp-style-sci_v1 .rp-badge::after {
+  content: "·"; margin-left: 7px; color: var(--rp-line);
+}
+
+/* ---- figures ---- */
+body.rp-style-sci_v1 .rp-fig {
+  border: none; box-shadow: none; padding: 6px 0 0; background: transparent;
+}
+body.rp-style-sci_v1 .rp-fig-img { border-radius: 2px; }
+body.rp-style-sci_v1 .rp-figcaption { margin-top: 8px; font-size: 12.8px; }
+body.rp-style-sci_v1 .rp-fig-title { color: var(--rp-ink); font-weight: 600; }
+body.rp-style-sci_v1 .rp-fig-desc,
+body.rp-style-sci_v1 .rp-tbl-desc { color: var(--rp-ink-mid); font-size: 12.8px; }
+
+/* ---- callouts ---- */
+body.rp-style-sci_v1 .rp-callout {
+  border: none; border-left: 3px solid var(--rp-primary);
+  border-radius: 0; background: var(--rp-bg-panel);
+  padding: 12px 16px; font-size: 13.5px; color: var(--rp-ink);
+}
+body.rp-style-sci_v1 .rp-callout-note    { border-left-color: var(--rp-primary); }
+body.rp-style-sci_v1 .rp-callout-tip     { border-left-color: var(--rp-ok); }
+body.rp-style-sci_v1 .rp-callout-warning { border-left-color: var(--rp-warn); }
+body.rp-style-sci_v1 .rp-callout-danger  { border-left-color: var(--rp-bad); }
+body.rp-style-sci_v1 .rp-callout-key      { border-left-color: var(--rp-ok); background: #F4FAF7; }
+body.rp-style-sci_v1 .rp-callout-guardrail{ border-left-color: var(--rp-warn); background: #FFF8E6; }
+body.rp-style-sci_v1 .rp-callout-icon { display: none; }
+body.rp-style-sci_v1 .rp-callout-body { display: inline; }
+
+/* ---- tables ---- */
+body.rp-style-sci_v1 .rp-tbl {
+  border: 1px solid var(--rp-line); border-radius: 2px;
+  box-shadow: none; padding: 12px; background: #fff;
+}
+body.rp-style-sci_v1 .rt-td {
+  padding: 6.5px 10px; border-bottom: 1px solid var(--rp-line-light);
+  font-size: 12.8px; vertical-align: middle;
+}
+body.rp-style-sci_v1 .rt-th {
+  background: #F4F7FA; color: var(--rp-ink); font-weight: 600;
+  padding: 8px 10px; border-bottom: 2px solid #CBD5E1;
+}
+body.rp-style-sci_v1 .rp-grid table.rp-table thead th {
+  background: #F4F7FA; border-bottom: 2px solid #CBD5E1;
+}
+body.rp-style-sci_v1 .rp-grid table.rp-table tbody td {
+  border-bottom: 1px solid var(--rp-line-light);
+}
+
+/* ---- details ---- */
+body.rp-style-sci_v1 .rp-details {
+  border: 1px solid var(--rp-line); border-radius: 2px;
+  background: #fff; padding: 0;
+}
+body.rp-style-sci_v1 .rp-details-summary {
+  padding: 9px 14px; font-size: 12.8px; font-weight: 600;
+  color: var(--rp-ink-mid); background: var(--rp-bg-panel);
+}
+body.rp-style-sci_v1 .rp-details-summary:hover { color: var(--rp-primary); }
+body.rp-style-sci_v1 .rp-details-body { padding: 10px 14px; }
+
+/* ---- empty ---- */
+body.rp-style-sci_v1 .rp-empty {
+  border: 1px dashed var(--rp-line); border-radius: 2px;
+  background: var(--rp-bg-panel); color: var(--rp-ink-dim); font-size: 12.8px;
+}
+
+/* ---- kpi row (legacy flex variant) → strip-card look ---- */
+body.rp-style-sci_v1 .rp-kpi-row {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  border: 1px solid var(--rp-line); background: var(--rp-line);
+  gap: 1px; border-radius: 2px;
+}
+body.rp-style-sci_v1 .rp-kpi { position: relative; padding: 14px 16px; background: #fff; }
+body.rp-style-sci_v1 .rp-kpi::before {
+  content: ""; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: var(--rp-primary);
+}
+body.rp-style-sci_v1 .rp-kpi-ok::before   { background: var(--rp-ok); }
+body.rp-style-sci_v1 .rp-kpi-warn::before { background: var(--rp-warn); }
+body.rp-style-sci_v1 .rp-kpi-bad::before  { background: var(--rp-bad); }
+body.rp-style-sci_v1 .rp-kpi-value {
+  font-size: 24px; font-weight: 700; line-height: 1.2; color: var(--rp-ink);
+}
+body.rp-style-sci_v1 .rp-kpi-label { font-size: 12px; color: var(--rp-ink-mid); }
+
+/* ---- references ---- */
+body.rp-style-sci_v1 .rp-refs {
+  margin: 10px 0; padding-left: 0; list-style: none;
+  counter-reset: rp-ref;
+}
+body.rp-style-sci_v1 .rp-ref {
+  counter-increment: rp-ref;
+  position: relative; padding: 6px 0 6px 34px;
+  font-size: 12.8px; line-height: 1.5;
+  border-bottom: 1px solid var(--rp-line-light);
+  color: var(--rp-ink-mid);
+}
+body.rp-style-sci_v1 .rp-ref::before {
+  content: "[" counter(rp-ref) "]";
+  position: absolute; left: 0;
+  font-family: var(--rp-font-mono);
+  color: var(--rp-primary); font-weight: 600;
+}
+body.rp-style-sci_v1 .rp-ref-doi { color: var(--rp-primary); }
+
+/* ---- citations ---- */
+body.rp-style-sci_v1 .rp-cite { font-size: 11px; }
+body.rp-style-sci_v1 .rp-cite a { color: var(--rp-primary); text-decoration: none; }
+
+/* ---- gallery ---- */
+body.rp-style-sci_v1 .rp-gallery {
+  border: 1px solid var(--rp-line); border-radius: 2px; box-shadow: none;
+  background: #fff;
+}
+body.rp-style-sci_v1 .rp-gallery-caption { padding: 10px 14px 6px; }
+body.rp-style-sci_v1 .rp-gallery-arrow {
+  background: rgba(255,255,255,0.9); border: 1px solid var(--rp-line);
+  border-radius: 2px; color: var(--rp-ink-mid);
+}
+body.rp-style-sci_v1 .rp-gallery-search {
+  border: 1px solid var(--rp-line); border-radius: 2px;
+  font-family: inherit; font-size: 12px; color: var(--rp-ink-mid);
+}
+
+/* ---- footer ---- */
+body.rp-style-sci_v1 .rp-footer {
+  background: #fff; border-top: 1px solid var(--rp-line);
+  color: var(--rp-ink-dim); font-size: 12px;
+}
+body.rp-style-sci_v1 .rp-footer-brand { color: var(--rp-ink); font-weight: 600; }
+
+/* ---- misc ---- */
+body.rp-style-sci_v1 .rp-filepath code {
+  background: transparent; padding: 0; font-size: inherit; color: inherit;
+}
+body.rp-style-sci_v1 code {
+  font-family: var(--rp-font-mono);
+  font-size: 0.92em; background: var(--rp-bg-panel);
+  padding: 1px 5px; border-radius: 2px;
+}
+body.rp-style-sci_v1 .rp-steps {
+  list-style: none; counter-reset: rp-sci-step;
+  margin: 10px 0; padding-left: 0;
+}
+body.rp-style-sci_v1 .rp-steps li {
+  counter-increment: rp-sci-step;
+  position: relative; padding: 6px 0 6px 44px;
+  font-size: 13.5px; color: var(--rp-ink-mid); line-height: 1.6;
+}
+body.rp-style-sci_v1 .rp-steps li::before {
+  content: "(" counter(rp-sci-step) ")";
+  position: absolute; left: 8px;
+  font-family: var(--rp-font-mono); font-weight: 700;
+  color: var(--rp-primary);
+}
