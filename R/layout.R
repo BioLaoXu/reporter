@@ -350,18 +350,6 @@ rp_footer <- function(meta, brand, theme, n_errors = 0L) {
             as.character(utils::packageVersion("reporter")))
         ),
       ),
-      tags$div(
-        class = "rp-footer-meta",
-        tags$span(paste0("Generated on ", as.character(meta$date))),
-        tags$span(paste0(
-          "reporter v", as.character(utils::packageVersion("reporter"))
-        )),
-        if (n_errors > 0L) {
-          tags$span(
-            class = "rp-footer-warn",
-            paste0(n_errors, " module(s) reported errors"))
-        }
-      ),
       if (!is.null(theme$footer_note) && nzchar(theme$footer_note)) {
         tags$p(class = "rp-footer-note", HTML(theme$footer_note))
       }

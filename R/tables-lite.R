@@ -40,7 +40,8 @@ rp_table_lite <- function(data, dom_id = NULL, toolbar = TRUE,
     cells <- lapply(seq_along(cols), function(j) {
       v <- data[[j]][[i]]
       v <- if (is.na(v) || rp_is_empty(v)) "" else as.character(v)
-      tags$td(class = if (num_cols[[j]]) "num" else NULL, v)
+      tags$td(class = if (num_cols[[j]]) "num" else NULL,
+        title = if (nzchar(v)) v else NULL, v)
     })
     tags$tr(cells)
   })

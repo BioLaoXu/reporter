@@ -1164,9 +1164,18 @@ body.rp-engine-lite a { color: var(--rp-primary, #0D6E8C); }
 /* ---- path pill: icon-only, hover reveals the path ---- */
 .rp-module-path a {
   display: inline-flex; align-items: center;
-  padding: 3px 7px; border-radius: 2px;
-  border: 1px solid var(--rp-line, #DCE3EA);
-  background: var(--rp-bg-panel, #F7F9FB);
+  padding: 0; border: none; background: none;
   color: var(--rp-ink-dim, #6C7C8C);
 }
 .rp-module-path a:hover { color: var(--rp-primary, #0D5C75); border-color: var(--rp-primary, #0D5C75); }
+
+
+/* ---- long cell strings: clamp column width, ellipsis (2026-11-07) ---- */
+.rp-grid table.rp-table tbody td {
+  max-width: 260px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.ReactTable .rt-td {
+  max-width: 300px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
