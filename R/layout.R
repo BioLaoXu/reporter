@@ -50,7 +50,8 @@ sci_v1_dependency <- function() {
 #' @return A [htmltools::tagList()] representing a full HTML document.
 #' @noRd
 rp_page <- function(title, navbar, toc, content, footer, theme,
-                    schema_json = NULL, engine = NULL) {
+                    schema_json = NULL, engine = NULL,
+                    extra_body_class = NULL) {
   sci_v1 <- identical(theme$style, "sci_v1")
   tagList(
     tags$head(
@@ -84,7 +85,8 @@ rp_page <- function(title, navbar, toc, content, footer, theme,
         if (!identical(theme$style %||% "classic", "classic")) {
           paste0("rp-style-", theme$style)
         },
-        if (identical(engine, "lite")) "rp-engine-lite"),
+        if (identical(engine, "lite")) "rp-engine-lite",
+        extra_body_class),
         collapse = " "),
       `data-rp-caption-lang` = theme$caption_lang,
       navbar,
@@ -383,17 +385,26 @@ rp_navbar_sci_v1 <- function(title, meta, brand, qc_text = NULL,
         tags$div(class = "rp-logo-box",
           tags$span(class = "rp-logo-mark", svg_mark),
           tags$div(class = "rp-logo-text",
-            tags$span(class = "rp-logo-name", "NGS-REPORTER"),
-            tags$span(class = "rp-logo-sub", "BIOINFO DELIVERY v2.0")
+            tags$span(class = "rp-logo-name",
+              c(brand$company, meta$company, "NGS-REPORTER")[
+                which(nzchar(c(brand$company %||% "", meta$company %||% "", "x")))[1L]]),
+            if (nzchar(brand$phonenum %||% "")) {
+              tags$span(class = "rp-logo-sub", brand$phonenum)
+            }
           )
         )
       ),
       tags$div(class = "rp-nav-center", crumb),
       tags$div(class = "rp-nav-right",
         tags$button(class = "rp-util-btn", type = "button",
-          title = "打开浏览器打印对话框，另存为 PDF",
+          title = "导出 PDF",
+          `aria-label` = "导出 PDF",
           onclick = "exportReportToPDF()",
-          "导出 PDF")
+          tags$svg(width = "14", height = "14", viewBox = "0 0 16 16",
+            fill = "none", stroke = "currentColor", `stroke-width` = "1.5",
+            tags$path(d = "M8 2v8"),
+            tags$polyline(points = "4.5 7 8 10.5 11.5 7"),
+            tags$path(d = "M2.5 13.5h11")))
       )
     )
   )

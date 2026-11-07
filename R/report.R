@@ -217,6 +217,7 @@ render_report <- function(report, output = "report.html",
                           title = NULL, only = NULL, quiet = FALSE, json_sidecar = FALSE,
                           engine = NULL, print_mode = FALSE,
                           qc_pill = NULL, print_max_rows = 100,
+                          print_style = c("original", "clean"),
                           nav_title = NULL,
                           print_html = FALSE) {
   if (!inherits(report, "reporter_report")) {
@@ -235,8 +236,13 @@ render_report <- function(report, output = "report.html",
     engine <- match.arg(engine, c("reactable", "lite"))
     ctx$meta$engine <- engine
   }
-  ctx$meta$print_mode <- isTRUE(print_mode)
+  ## "original" keeps the page exactly as rendered (current gallery slide,
+  ## current table page) and only lays the fixed bars out for print —
+  ## the user-facing default; "clean" is the legacy simplified print view
+  print_style <- match.arg(print_style)
+  ctx$meta$print_mode <- print_mode
   ctx$meta$print_max_rows <- as.integer(print_max_rows %||% 100L)
+  ctx$meta$print_style <- print_style
   ## fresh numbering/TOC/schema for every render — a shared ctx no longer
   ## leaks counters across outputs
   ctx$.rp_reset_render_state()
@@ -461,7 +467,9 @@ render_report <- function(report, output = "report.html",
   }
   footer <- rp_footer(ctx$meta, theme$brand, theme, length(errors))
   page <- rp_page(title, navbar, toc, content, footer, theme,
-    schema_json = schema_json, engine = ctx$meta$engine)
+    schema_json = schema_json, engine = ctx$meta$engine,
+    extra_body_class = if (identical(ctx$meta$print_style, "original"))
+      "rp-print-original" else NULL)
 
   ## ---- write --------------------------------------------------------
   output <- as.character(output)[1L]
@@ -485,8 +493,9 @@ render_report <- function(report, output = "report.html",
       null = "null", na = "null"), sidecar, useBytes = TRUE)
   }
   if (isTRUE(print_html)) {
-    ## companion print-ready HTML (full tables, unfolded details) for the
-    ## navbar "导出 PDF" button and manual Ctrl+P
+    ## companion print-ready HTML (full tables, unfolded details) —
+    ## the navbar button instead prints the page as-is when the body
+    ## carries rp-print-original (print_style = "original")
     print_out <- sub("\\.html$", "_print.html", output)
     render_report(report, output = print_out, theme = theme,
       standalone = standalone, title = title, engine = engine,

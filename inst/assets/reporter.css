@@ -1179,3 +1179,9 @@ body.rp-engine-lite a { color: var(--rp-primary, #0D6E8C); }
   max-width: 300px;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
+
+/* th must be the positioning context for the header badges */
+.rp-grid table.rp-table thead th { position: relative; }
+
+/* footer brand line centered */
+.rp-footer .rp-footer-line { justify-content: center; text-align: center; }

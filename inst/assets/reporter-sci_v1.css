@@ -2051,3 +2051,45 @@ body.rp-style-sci_v1 .rp-gallery-item {
   font-size: 11px; max-width: 220px;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
+
+/* meta grid: auto-fit — no empty filler cell when facts < 6 */
+body.rp-style-sci_v1 .rp-meta-grid {
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)) !important;
+}
+
+/* ==========================================================================
+   print_style = "original" — the printed PDF keeps the page exactly as
+   rendered: current gallery slide, current table page. Only the fixed
+   bars are laid out (navbar becomes static, TOC hidden).
+   ========================================================================== */
+@media print {
+  body.rp-print-original .rp-navbar { position: static; box-shadow: none; }
+  body.rp-print-original .rp-toc { display: none !important; }
+  body.rp-print-original .rp-layout { padding-top: 0 !important; }
+  body.rp-print-original .rp-main { margin-left: 0 !important; padding: 0 !important; }
+  body.rp-print-original .rp-util-btn { display: none !important; }
+  body.rp-print-original .rp-toc-toggle { display: none !important; }
+  /* carousel: current slide only — never unfold every pane */
+  body.rp-print-original .rp-gallery-track {
+    display: flex !important; transform: none !important;
+  }
+  body.rp-print-original .rp-gallery-pane { display: none !important; }
+  body.rp-print-original .rp-gallery-pane.active { display: block !important; }
+  /* tables: keep the current page, hide the interactive controls */
+  body.rp-print-original .rp-grid-page-btn,
+  body.rp-print-original .rp-grid-search,
+  body.rp-print-original .rp-grid-export { display: none !important; }
+}
+
+/* meta grid: seamless borders (no background gap lines when the cell
+ * count doesn't fill the last row) */
+body.rp-style-sci_v1 .rp-meta-grid {
+  background: transparent !important;
+  border: 1px solid var(--rp-line, #DCE3EA);
+  gap: 0;
+}
+body.rp-style-sci_v1 .rp-meta-cell {
+  border: 1px solid var(--rp-line, #DCE3EA);
+  margin: 0 -1px -1px 0;
+}
+body.rp-style-sci_v1 .rp-meta-grid { overflow: hidden; }

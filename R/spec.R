@@ -303,6 +303,7 @@ render_spec <- function(spec, result_path = NULL, output = "report.html",
                         title = NULL, standalone = TRUE, theme = NULL,
                         quiet = FALSE, engine = NULL,
                         print_html = FALSE, qc_pill = NULL,
+                        print_style = c("original", "clean"),
                         nav_title = NULL) {
   sp <- load_spec(spec)
   spec_dir <- attr(sp, "spec_dir")
@@ -380,5 +381,6 @@ render_spec <- function(spec, result_path = NULL, output = "report.html",
     title = title %||% rp_char1(sp$title) %||% "Analysis Report",
     quiet = quiet, engine = engine %||% rp_char1(sp$engine),
     print_html = print_html, qc_pill = qc_pill,
+    print_style = print_style,
     nav_title = nav_title %||% rp_char1(sp$nav_title))
 }
