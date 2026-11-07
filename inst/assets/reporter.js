@@ -194,7 +194,7 @@
     function open(src, name) {
       close();
       box = doc.createElement("div");
-      box.className = "rp-lightbox";
+      box.className = "rp-lightbox open";
 
       var img = doc.createElement("img");
       img.src = src;

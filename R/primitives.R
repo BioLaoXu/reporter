@@ -482,8 +482,15 @@ gallery <- function(images, title = NULL, caption = NULL, description = NULL,
       if (!is.null(caption) || !is.null(title)) {
         tags$div(
           class = "rp-gallery-caption",
-          if (!is.null(caption)) tags$span(class = "rp-badge rp-badge-fig", caption),
-          if (!is.null(title)) tags$span(class = "rp-fig-title", HTML(title))
+          tags$span(class = "rp-gallery-caption-left",
+            if (!is.null(caption)) tags$span(class = "rp-badge rp-badge-fig", caption),
+            if (!is.null(title)) tags$span(class = "rp-fig-title", HTML(title))
+          ),
+          tags$input(
+            class = "rp-gallery-search", type = "text",
+            placeholder = "Search sample ...",
+            `data-gallery` = gid
+          )
         )
       },
       tags$div(
@@ -500,11 +507,6 @@ gallery <- function(images, title = NULL, caption = NULL, description = NULL,
           type = "button", "aria-label" = "Next",
           rp_icon("chevron-right")
         )
-      ),
-      tags$input(
-        class = "rp-gallery-search", type = "text",
-        placeholder = "Search sample ...",
-        `data-gallery` = gid
       ),
     tags$div(class = "rp-gallery-list", tagList(list_tags))
   )

@@ -235,17 +235,41 @@ report_context <- function(result_path,
     )
     engine <- ctx$meta$engine %||% "reactable"
     print_mode <- isTRUE(ctx$meta$print_mode)
+
+    ## column explanations -> small "?" badges on the header (hover for
+    ## the full text). Replaces the collapsible details panel, which
+    ## stretched the page and expanded badly in the printed PDF.
+    ex_map <- NULL
+    if (isTRUE(explain)) {
+      reg <- tryCatch(ctx$explain_registry(), error = function(e) NULL)
+      if (length(reg)) {
+        ex <- tryCatch(
+          explain_table(names(data), reg, sheet = explain_sheet,
+            fill = ctx$meta$explain_fill %||% "待更新"),
+          error = function(e) NULL
+        )
+        if (!is.null(ex) && nrow(ex) > 0L) {
+          ex_map <- stats::setNames(ex[["解释"]], ex[["表格列名"]])
+        }
+      }
+    }
+    ## mirror the column explanations into the schema entry (index only)
+    if (!is.null(ex_map)) {
+      tbl_entry <- private$schema$tables[[length(private$schema$tables)]]
+      tbl_entry$explanations <- as.list(ex_map)
+      private$schema$tables[[length(private$schema$tables)]] <- tbl_entry
+    }
+
     block <- if (identical(engine, "lite")) {
       table_lite_block(
         data = data, number = n, title = title,
         caption = caption, description = description,
         dom_id = tid, data_attrs = tbl_attrs,
         max_rows = if (print_mode) ctx$meta$print_max_rows %||% 100L
-                   else 500L
+                   else 500L,
+        explain = ex_map
       )
     } else if (print_mode) {
-      ## print mode: full rows for normal tables, smart cap for huge
-      ## ones (a 5000-row grid would produce a useless PDF)
       maxr <- ctx$meta$print_max_rows %||% 100L
       d2 <- data
       note <- NULL
@@ -259,50 +283,25 @@ report_context <- function(result_path,
         caption = caption,
         description = paste0(c(rp_char1(description), note),
           collapse = " "),
-        dom_id = tid, data_attrs = tbl_attrs, ...,
+        dom_id = tid, data_attrs = tbl_attrs,
+        columns = if (!is.null(ex_map)) {
+          render_cols(names(data), explain = ex_map)
+        },
+        ...,
         pagination = FALSE
       )
     } else {
       table_block(
         data = data, number = n, title = title,
         caption = caption, description = description,
-        dom_id = tid, data_attrs = tbl_attrs, ...
-      )
-    }
-    if (!isTRUE(explain)) return(block)
-    reg <- tryCatch(ctx$explain_registry(), error = function(e) NULL)
-    if (!length(reg)) return(block)
-    ## every column gets a row; unmatched columns fall back to the
-    ## builtin dictionary, then to the configured placeholder (or are
-    ## dropped entirely when explain_fill = NULL)
-    ex <- tryCatch(
-      explain_table(names(data), reg, sheet = explain_sheet,
-        fill = ctx$meta$explain_fill %||% "待更新"),
-      error = function(e) NULL
-    )
-    ## mirror the column explanations into the schema entry (index only)
-    if (!is.null(ex) && nrow(ex) > 0L) {
-      tbl_entry <- private$schema$tables[[length(private$schema$tables)]]
-      tbl_entry$explanations <- as.list(stats::setNames(
-        ex[["解释"]], ex[["表格列名"]]))
-      private$schema$tables[[length(private$schema$tables)]] <- tbl_entry
-    }
-    ## always attach: every column gets a row, unresolved ones show
-    ## 待更新 so missing explanations stay visible (author can fill the
-    ## registry workbook to complete them)
-    tagList(
-      block,
-      details_block(
-        content = if (identical(ctx$meta$engine %||% "reactable", "lite")) {
-          rp_table_lite(ex, toolbar = FALSE)
-        } else {
-          data_table(ex, searchable = FALSE, show_page_sizes = FALSE,
-                     default_page_size = 30L, wrap = TRUE, align = "left")
+        dom_id = tid, data_attrs = tbl_attrs,
+        columns = if (!is.null(ex_map)) {
+          render_cols(names(data), explain = ex_map)
         },
-        summary = "点击查看表格解释：",
-        open = print_mode
+        ...
       )
-    )
+    }
+    block
   }
 
   ctx$gallery <- function(images, title, description = NULL, ...) {

@@ -346,15 +346,9 @@ rp_footer <- function(meta, brand, theme, n_errors = 0L) {
         class = "rp-footer-line",
         tags$span(
           class = "rp-footer-brand",
-          if (nzchar(brand$company %||% "")) {
-            paste0("© ", year, " ", brand$company)
-          } else {
-            paste0("© ", year, " ", meta$project %||% "")
-          }
+          paste0("© ", year, " reporter v",
+            as.character(utils::packageVersion("reporter")))
         ),
-        if (nzchar(brand$phonenum %||% "")) {
-          tags$span(class = "rp-footer-phone", paste0("Tel: ", brand$phonenum))
-        }
       ),
       tags$div(
         class = "rp-footer-meta",
@@ -448,14 +442,17 @@ rp_module_section_sci_v1 <- function(id, title, number, content,
                                      path_note = NULL, link_path = NULL) {
   pill <- NULL
   if (!is.null(path_note) && nzchar(path_note)) {
+    ## icon-only pill: full path on hover, click opens the RELATIVE
+    ## folder (report html usually ships next to the Report/ directory).
+    ## If the browser cannot open it, the report and Report/ are not
+    ## siblings — the tooltip says so.
+    tip <- paste0(path_note,
+      " — 若无法打开，说明报告 HTML 与 Report 目录不在同一层级")
     pill <- tags$span(class = "rp-filepath rp-module-path",
-      if (!is.null(link_path) && nzchar(link_path)) {
-        tags$a(href = paste0("file://", link_path), target = "_blank",
-          tags$span(rp_icon("folder"), class = "rp-filepath-icon"),
-          tags$code(path_note))
-      } else {
-        tags$code(path_note)
-      }
+      tags$a(href = path_note, target = "_blank", title = tip,
+        `aria-label` = path_note,
+        tags$span(rp_icon("folder"), class = "rp-filepath-icon")
+      )
     )
   }
   tags$section(class = "rp-module", id = id,

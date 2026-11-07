@@ -28,7 +28,13 @@ test_that("atac qc module builds KPIs from ATAC QC summaries", {
   out <- m$render(ctx)
   html <- paste(as.character(as.list(out)), collapse = "\n")
   expect_match(html, "rp-kpi-row", fixed = TRUE)
-  expect_match(html, "rp-details", fixed = TRUE)  # auto table explanation
+  ## header badges are static HTML under the lite engine
+  ctx$meta$engine <- "lite"
+  out2 <- ctx$data_table(read_result_table(
+    file.path(ctx$meta$result_path, "QC", "Summary", "Filtered.Summary.txt"),
+    sep = "\t"), title = "QC", explain_sheet = "QC")
+  expect_match(paste(as.character(as.list(out2)), collapse = "\n"),
+    "rp-col-help", fixed = TRUE)
 })
 
 test_that("atac mapping module renders stats and png gallery", {

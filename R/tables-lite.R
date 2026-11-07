@@ -13,7 +13,7 @@ rp_lite_is_num <- function(x) {
 
 ## internal: one lite table (server-side full DOM, JS enhances it)
 rp_table_lite <- function(data, dom_id = NULL, toolbar = TRUE,
-                          max_rows = 500L) {
+                          max_rows = 500L, explain = NULL) {
   stopifnot(rp_df_usable(data))
   if (nrow(data) > max_rows) {
     data <- data[seq_len(max_rows), , drop = FALSE]
@@ -23,10 +23,17 @@ rp_table_lite <- function(data, dom_id = NULL, toolbar = TRUE,
   cols <- names(data)
 
   head_cells <- lapply(seq_along(cols), function(j) {
+    help <- NULL
+    if (!is.null(explain) && !is.null(explain[[cols[[j]]]])) {
+      tip <- explain[[cols[[j]]]]
+      help <- tags$span(class = "rp-col-help",
+        title = if (tip == "待更新") "列名解释待更新" else tip, "?")
+    }
     tags$th(
       class = if (num_cols[[j]]) "num" else NULL,
       title = cols[[j]],
-      HTML(rp_inline_md(cols[[j]]))
+      HTML(rp_inline_md(cols[[j]])),
+      help
     )
   })
   body_rows <- lapply(seq_len(nrow(data)), function(i) {
@@ -91,12 +98,12 @@ rp_table_lite <- function(data, dom_id = NULL, toolbar = TRUE,
 table_lite_block <- function(data, number = NULL, title = NULL,
                              caption = NULL, description = NULL,
                              dom_id = NULL, data_attrs = NULL,
-                             max_rows = 500L) {
+                             max_rows = 500L, explain = NULL) {
   if (is.null(caption) && !is.null(number)) {
     caption <- paste("Table", number)
   }
   grid <- rp_table_lite(data, dom_id = dom_id, toolbar = TRUE,
-                        max_rows = max_rows)
+                        max_rows = max_rows, explain = explain)
   tbl_div <- tags$div(
     class = "rp-tbl",
     id = dom_id,

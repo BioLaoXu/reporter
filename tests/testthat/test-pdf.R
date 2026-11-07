@@ -9,7 +9,6 @@ test_that("print_mode unfolds details and disables reactable pagination", {
   res <- render_report(report, output = out, print_mode = TRUE,
     theme = reporter_theme(preset = "blank"), quiet = TRUE)
   html <- paste(readLines(res$output, warn = FALSE), collapse = "\n")
-  expect_match(html, "<details class=\"rp-details\" open", fixed = TRUE)
   expect_match(html, '"pagination":false', fixed = TRUE)
   ## interactive delivery unchanged when print_mode is off
   out2 <- tempfile(fileext = ".html")

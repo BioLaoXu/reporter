@@ -124,11 +124,18 @@ tippy_cell <- function(text, tooltip = text) {
 #' cols <- render_cols(c("Gene", "Description"), max_char = 40)
 #' reactable::reactable(df, columns = cols)
 #' }
-render_cols <- function(col_names, max_char = 30L) {
+render_cols <- function(col_names, max_char = 30L, explain = NULL) {
   stopifnot(is.character(col_names), is.numeric(max_char), length(max_char) == 1L)
   out <- lapply(col_names, function(x) {
+    help <- NULL
+    if (!is.null(explain) && !is.null(explain[[x]])) {
+      tip <- explain[[x]]
+      help <- htmltools::tags$span(class = "rp-col-help",
+        title = if (tip == "待更新") "列名解释待更新" else tip, "?")
+    }
     reactable::colDef(
       html = TRUE,
+      header = htmltools::tags$span(class = "rp-col-head", x, help),
       cell = function(value, index, name) {
         as.character(tippy_cell(text = value, tooltip = value))
       }

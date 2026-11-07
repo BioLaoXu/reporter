@@ -27,10 +27,12 @@ test_that("ctx$data_table auto-attaches the explanation details block", {
   qc_dir <- file.path(tmp, "1.QC")
   raw <- read_result_table(file.path(qc_dir, "Raw.Reads.txt"), sep = "\t")
   ctx$.rp_set_module("mod-qc")
+  ctx$meta$engine <- "lite"   # header badges are static HTML in lite
   out <- ctx$data_table(raw, title = "QC stats", explain_sheet = "QC")
   html <- paste(as.character(as.list(out)), collapse = "\n")
-  expect_match(html, "rp-details", fixed = TRUE)
-  expect_match(html, "表格解释", fixed = TRUE)
+  ## explanations now render as "?" badges on the header (hover tooltip)
+  expect_match(html, "rp-col-help", fixed = TRUE)
+  expect_match(html, 'title="', fixed = TRUE)
   ## opt-out works
   out2 <- ctx$data_table(raw, title = "QC stats", explain = FALSE)
   html2 <- paste(as.character(as.list(out2)), collapse = "\n")

@@ -1132,3 +1132,41 @@ body.rp-engine-lite a { color: var(--rp-primary, #0D6E8C); }
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .rp-gallery-list { justify-content: center; }
+
+
+/* ---- column explanation badges (2026-11-07) ---- */
+.rp-col-head { position: relative; padding-right: 14px; }
+.rp-col-help {
+  position: absolute; top: -2px; right: 0;
+  display: inline-block; width: 13px; height: 13px;
+  line-height: 13px; text-align: center;
+  font-size: 9px; font-weight: 700; font-family: var(--rp-font-mono, Consolas, monospace);
+  border-radius: 50%;
+  background: var(--rp-bg-panel, #F0F4F7); color: var(--rp-ink-dim, #6C7C8C);
+  border: 1px solid var(--rp-line, #DCE3EA);
+  cursor: help; user-select: none;
+}
+.rp-col-help:hover { background: var(--rp-primary, #0D5C75); color: #fff; border-color: var(--rp-primary, #0D5C75); }
+
+/* ---- gallery caption row: title left, search right ---- */
+.rp-gallery-caption {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px;
+}
+.rp-gallery-search {
+  width: 180px; padding: 4px 10px;
+  font-family: inherit; font-size: 12px;
+  border: 1px solid var(--rp-line, #DCE3EA); border-radius: 2px;
+  background: #fff; color: var(--rp-ink, #18222C);
+}
+.rp-gallery-search:focus { outline: none; border-color: var(--rp-primary, #0D5C75); }
+
+/* ---- path pill: icon-only, hover reveals the path ---- */
+.rp-module-path a {
+  display: inline-flex; align-items: center;
+  padding: 3px 7px; border-radius: 2px;
+  border: 1px solid var(--rp-line, #DCE3EA);
+  background: var(--rp-bg-panel, #F7F9FB);
+  color: var(--rp-ink-dim, #6C7C8C);
+}
+.rp-module-path a:hover { color: var(--rp-primary, #0D5C75); border-color: var(--rp-primary, #0D5C75); }
