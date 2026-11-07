@@ -52,7 +52,8 @@
 
     ths.forEach(function (th, ci) {
       th.style.cursor = "pointer";
-      th.title = "点击排序";
+      var baseTip = (th.getAttribute("data-tip") || "").trim();
+      th.title = baseTip ? baseTip + "｜点击排序" : "点击排序";
       th.addEventListener("click", function () {
         var dir = state[ci] === "asc" ? "desc" : "asc";
         state = {};

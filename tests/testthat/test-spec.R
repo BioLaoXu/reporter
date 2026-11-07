@@ -49,6 +49,5 @@ test_that("explanation table fills unmatched columns with 待更新", {
   dt <- data.frame(SampleName = "s1", TotallyNewCol = 1)
   out <- ctx$data_table(dt, title = "t")
   html <- paste(as.character(as.list(out)), collapse = "\n")
-  expect_match(html, "rp-col-help", fixed = TRUE)    # attached (1 matched)
-  expect_match(html, "列名解释待更新", fixed = TRUE)  # unmatched col filled
+  expect_match(html, "列名解释待更新", fixed = TRUE)  # unmatched col tooltip
 })

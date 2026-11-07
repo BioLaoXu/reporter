@@ -1,7 +1,7 @@
 Package: reporter
 Type: Package
 Title: Modular Automated HTML Reporting for Bioinformatics Pipelines
-Version: 0.1.0
+Version: 0.2.0
 Authors@R: c(
     person("xu", "fa", , "BioLaoXu@users.noreply.github.com", role = c("aut", "cre")),
     person("Origene", "BioInfoTeam", , "BioLaoXu@users.noreply.github.com", role = "aut")

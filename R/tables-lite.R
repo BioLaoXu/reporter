@@ -23,17 +23,18 @@ rp_table_lite <- function(data, dom_id = NULL, toolbar = TRUE,
   cols <- names(data)
 
   head_cells <- lapply(seq_along(cols), function(j) {
-    help <- NULL
+    ## hovering the column name shows its explanation (native tooltip);
+    ## unresolved columns say the explanation is pending
+    tip <- NULL
     if (!is.null(explain) && !is.null(explain[[cols[[j]]]])) {
-      tip <- explain[[cols[[j]]]]
-      help <- tags$span(class = "rp-col-help",
-        title = if (tip == "待更新") "列名解释待更新" else tip, "?")
+      tip <- if (explain[[cols[[j]]]] == "待更新") "列名解释待更新"
+             else explain[[cols[[j]]]]
     }
     tags$th(
       class = if (num_cols[[j]]) "num" else NULL,
-      title = cols[[j]],
-      HTML(rp_inline_md(cols[[j]])),
-      help
+      title = tip %||% cols[[j]],
+      `data-tip` = tip,
+      HTML(rp_inline_md(cols[[j]]))
     )
   })
   body_rows <- lapply(seq_len(nrow(data)), function(i) {
